@@ -1,5 +1,6 @@
-from src.rectangle import Rectangle
 from unittest import TestCase
+
+from src.rectangle import Rectangle
 
 
 class TestRectangle(TestCase):
