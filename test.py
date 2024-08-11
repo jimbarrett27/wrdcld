@@ -1,5 +1,5 @@
 from collections import Counter
-from src import make_word_cloud
+from wrdcld import make_word_cloud
 
 with open("dancingmen.txt") as f:
     contents = f.read()

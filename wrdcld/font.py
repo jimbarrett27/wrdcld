@@ -1,18 +1,20 @@
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
+from wrdcld.util import get_repo_root
 
-
-FONT_PATH = Path(r"C:\\Windows\\Fonts\\Verdanab.ttf")
-# FONT_PATH = Path("/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf")
+def get_default_font_path():
+    return get_repo_root() / "fonts" / "OpenSans-Regular.ttf"
 
 
 def find_fontsize_for_width(width, word):
     fontsize = width / 2
     step = width / 2
 
+    font_path = get_default_font_path()
     while step > 0.5:
         step /= 2
-        font = ImageFont.truetype(FONT_PATH, fontsize)
+        
+        font = ImageFont.truetype(font_path, fontsize)
         length = font.getlength(word)
 
         if length < width:
