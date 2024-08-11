@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "wrdcld"
+version = "0.1.0"
+description = "A predictable, interpretable wordcloud library"
+authors = ["Jim Barrett <jimbarrett27@gmail.com>", "Marcus Näslund <naslundx@gmail.com>"]
+license = "GPLv3"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pillow = "^10.4.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.8.0"
+pylint = "^3.2.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
