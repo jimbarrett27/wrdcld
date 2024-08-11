@@ -22,14 +22,17 @@ def make_word_cloud(
     _, first_count = word_counts.most_common(1)[0]
 
     available_rectangles = [Rectangle(width=500, height=500, x=0, y=0)]
-    for word, count in word_counts.most_common():
+    for word, count in word_counts.most_common(500):
         required_font_size = maximum_font_size * math.sqrt(count / first_count)
 
         if required_font_size < 1:
             break
 
         available_rectangles = fill_next_word(
-            word, required_font_size, available_rectangles, canvas
+            word, required_font_size, available_rectangles, img, canvas
         )
+
+        # img.show()
+        # input()
 
     return img

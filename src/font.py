@@ -1,5 +1,5 @@
 from pathlib import Path
-from PIL import ImageFont
+from PIL import Image, ImageDraw, ImageFont
 
 
 FONT_PATH = Path(r"C:\\Windows\\Fonts\\Verdanab.ttf")
@@ -23,5 +23,17 @@ def find_fontsize_for_width(width, word):
     return fontsize
 
 
-def draw_text(canvas, rectangle, word, font):
-    canvas.text((rectangle.x, rectangle.y), word, fill=(255, 255, 0), font=font)
+def draw_text(canvas, img, rectangle, word, font, rotate=False):
+    FONT_COLOR = (255, 255, 0)
+
+    if rotate:
+        text_image = Image.new("RGB", rectangle.rotated_ccw.wh, (73, 109, 137))
+        text_draw = ImageDraw.Draw(text_image)
+        text_draw.text((0, 0), word, font=font, fill=FONT_COLOR)
+        rotated_text_image = text_image.rotate(90, expand=True)
+        img.paste(rotated_text_image, rectangle.xy)
+        # canvas.rectangle(rectangle.corners)
+
+    else:
+        canvas.text(rectangle.xy, word, font=font, fill=FONT_COLOR)
+        # canvas.rectangle(rectangle.corners)

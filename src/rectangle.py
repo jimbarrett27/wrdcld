@@ -1,7 +1,8 @@
 from dataclasses import dataclass
+import math
 
 
-@dataclass
+@dataclass(frozen=True)
 class Rectangle:
     width: float
     height: float
@@ -9,8 +10,32 @@ class Rectangle:
     y: float
 
     @property
+    def xy(self):
+        return (int(self.x + 0.5), int(self.y + 0.5))
+
+    @property
+    def wh(self):
+        return (math.ceil(self.width), math.ceil(self.height))
+
+    @property
+    def corners(self):
+        return (self.x, self.y, self.x + self.width, self.y + self.height)
+
+    @property
     def area(self):
         return self.width * self.height
+
+    @property
+    def rotated_ccw(self):
+        return Rectangle(
+            x=self.x,
+            y=self.y + self.height - self.width,
+            width=self.height,
+            height=self.width,
+        )
+
+    def __repr__(self):
+        return f"Rectangle(x={int(self.x)} y={int(self.y)} w={int(self.width)} h={int(self.height)})"
 
 
 def fill_remaining_space_horizontal(
