@@ -32,8 +32,8 @@ def draw_text(canvas, img, rectangle, word, font, rotate=False):
         text_draw.text((0, 0), word, font=font, fill=FONT_COLOR)
         rotated_text_image = text_image.rotate(90, expand=True)
         img.paste(rotated_text_image, rectangle.xy)
-        # canvas.rectangle(rectangle.corners)
+        # canvas.rectangle(rectangle.xyrb)
 
     else:
         canvas.text(rectangle.xy, word, font=font, fill=FONT_COLOR)
-        # canvas.rectangle(rectangle.corners)
+        # canvas.rectangle(rectangle.xyrb)

@@ -8,4 +8,4 @@ Run `poetry install`
 Run `poetry run black src` and `poetry run pylint src` for styling and linting.
 
 ## Testing
-Todo
+Run `python -m unittest discover tests/`
