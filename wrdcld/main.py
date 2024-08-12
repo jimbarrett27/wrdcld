@@ -49,7 +49,6 @@ def _fill(
 
     return text_rectangle
 
-
 def fill_next_word(word, required_font_size, available_rectangles, img, canvas):
     font_path = get_default_font_path()
     font = ImageFont.truetype(font_path, required_font_size)
