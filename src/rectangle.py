@@ -18,7 +18,15 @@ class Rectangle:
         return (math.ceil(self.width), math.ceil(self.height))
 
     @property
-    def corners(self):
+    def right(self):
+        return self.x + self.width
+
+    @property
+    def bottom(self):
+        return self.y + self.height
+
+    @property
+    def xyrb(self):
         return (self.x, self.y, self.x + self.width, self.y + self.height)
 
     @property
@@ -78,7 +86,7 @@ def fill_remaining_space_horizontal(
         rectangles.append(
             Rectangle(
                 x=outer_rect.x,
-                y=inner_rect.y + inner_rect.height,
+                y=inner_rect.bottom,
                 width=outer_rect.width,
                 height=outer_rect.height - inner_y_offset - inner_rect.height,
             )
@@ -99,7 +107,7 @@ def fill_remaining_space_horizontal(
     if remaining_width > 0:
         rectangles.append(
             Rectangle(
-                x=inner_rect.x + inner_rect.width,
+                x=inner_rect.right,
                 y=inner_rect.y,
                 width=outer_rect.width - inner_x_offset - inner_rect.width,
                 height=inner_rect.height,
@@ -149,7 +157,7 @@ def fill_remaining_space_vertical(
         rectangles.append(
             Rectangle(
                 x=inner_rect.x,
-                y=inner_rect.y + inner_rect.height,
+                y=inner_rect.bottom,
                 width=inner_rect.width,
                 height=outer_rect.height - inner_y_offset - inner_rect.height,
             )
@@ -170,7 +178,7 @@ def fill_remaining_space_vertical(
     if remaining_width > 0:
         rectangles.append(
             Rectangle(
-                x=inner_rect.x + inner_rect.width,
+                x=inner_rect.right,
                 y=outer_rect.y,
                 width=outer_rect.width - inner_x_offset - inner_rect.width,
                 height=outer_rect.height,
