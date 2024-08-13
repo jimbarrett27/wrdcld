@@ -28,14 +28,17 @@ def find_fontsize_for_width(width, word):
 def draw_text(canvas, img, rectangle, word, font, rotate=False):
     FONT_COLOR = (255, 255, 0)
 
+    text_bbox = font.getbbox(word)
+
     if rotate:
         text_image = Image.new("RGB", rectangle.rotated_ccw.wh, (73, 109, 137))
         text_draw = ImageDraw.Draw(text_image)
-        text_draw.text((0, 0), word, font=font, fill=FONT_COLOR)
+
+        text_draw.text((-text_bbox[0], -text_bbox[1]), word, font=font, fill=FONT_COLOR)
         rotated_text_image = text_image.rotate(90, expand=True)
         img.paste(rotated_text_image, rectangle.xy)
         # canvas.rectangle(rectangle.xyrb)
 
     else:
-        canvas.text(rectangle.xy, word, font=font, fill=FONT_COLOR)
+        canvas.text((rectangle.x-text_bbox[0],rectangle.y-text_bbox[1]), word, font=font, fill=FONT_COLOR)
         # canvas.rectangle(rectangle.xyrb)
