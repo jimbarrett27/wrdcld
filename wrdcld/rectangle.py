@@ -12,10 +12,16 @@ class Rectangle:
 
     @property
     def xy(self):
+        """
+        Returns the coordinates of the rectangle as a tuple (x, y).
+        """
         return (int(self.x + 0.5), int(self.y + 0.5))
 
     @property
     def wh(self):
+        """
+        Returns the width and height of the rectangle as a tuple (width, height).
+        """
         return (math.ceil(self.width), math.ceil(self.height))
 
     @property
@@ -28,14 +34,23 @@ class Rectangle:
 
     @property
     def xyrb(self):
+        """
+        Returns the coordinates of the rectangle as a tuple (x, y, right, bottom).
+        """
         return (self.x, self.y, self.x + self.width, self.y + self.height)
 
     @property
     def area(self):
+        """
+        Returns the area of the rectangle.
+        """
         return self.width * self.height
 
     @property
     def rotated_ccw(self):
+        """
+        Returns a new rectangle that is rotated 90 degrees counter-clockwise.
+        """
         return Rectangle(
             x=self.x,
             y=self.y + self.height - self.width,

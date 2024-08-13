@@ -26,8 +26,12 @@ def find_fontsize_for_width(width, word):
 
 
 def draw_text(canvas, img, rectangle, word, font, rotate=False):
+    """
+    
+    """
     FONT_COLOR = (255, 255, 0)
 
+    # text can sometimes have a negative bounding box, so we need to account for that
     text_bbox = font.getbbox(word)
 
     if rotate:
