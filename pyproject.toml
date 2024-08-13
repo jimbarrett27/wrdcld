@@ -9,6 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.9"
 pillow = "^10.4.0"
+numpy = "^2.0.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.8.0"

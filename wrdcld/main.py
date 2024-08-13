@@ -4,8 +4,7 @@ from PIL import ImageFont
 from .font import draw_text, get_default_font_path
 from .rectangle import (
     Rectangle,
-    fill_remaining_space_horizontal,
-    fill_remaining_space_vertical,
+    fill_remaining_space
 )
 
 def _fill(
@@ -78,7 +77,6 @@ def fill_next_word(word, required_font_size, available_rectangles, img, canvas):
     )
 
     options = []
-
     if horizontal_option is not None:
         options.append("horizontal")
     if vertical_option is not None:
@@ -114,10 +112,6 @@ def fill_next_word(word, required_font_size, available_rectangles, img, canvas):
             rotate=True,
         )
 
-    # figure out new available rectangles
-    fill_func = random.choice(
-        [fill_remaining_space_horizontal, fill_remaining_space_vertical]
-    )
-    new_available_rectangles = fill_func(chosen_rectangle, text_rectangle)
+    new_available_rectangles = fill_remaining_space(img, chosen_rectangle)
 
     return available_rectangles + new_available_rectangles
