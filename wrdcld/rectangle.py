@@ -2,6 +2,8 @@ from dataclasses import dataclass
 import math
 import numpy as np
 
+MIN_RECTANGLE_SIDE_LENGTH = 5
+
 
 @dataclass(frozen=True)
 class Rectangle:
@@ -60,6 +62,24 @@ class Rectangle:
 
     def __repr__(self):
         return f"Rectangle(x={int(self.x)} y={int(self.y)} w={int(self.width)} h={int(self.height)})"
+
+
+def _remove_small_rectangles(rectangles: list[Rectangle]) -> list[Rectangle]:
+    """
+    Removes rectangles that are smaller than the minimum rectangle side length.
+
+    Args:
+        rectangles (list[Rectangle]): List of rectangles.
+
+    Returns:
+        list[Rectangle]: List of rectangles with the small rectangles removed.
+    """
+    return [
+        rectangle
+        for rectangle in rectangles
+        if rectangle.height >= MIN_RECTANGLE_SIDE_LENGTH
+        and rectangle.width >= MIN_RECTANGLE_SIDE_LENGTH
+    ]
 
 
 def fill_remaining_space_horizontal(
@@ -129,6 +149,8 @@ def fill_remaining_space_horizontal(
                 height=inner_rect.height,
             )
         )
+
+    rectangles = _remove_small_rectangles(rectangles)
 
     return rectangles
 
@@ -201,11 +223,87 @@ def fill_remaining_space_vertical(
             )
         )
 
+    rectangles = _remove_small_rectangles(rectangles)
+
     return rectangles
+
+
+def _find_gaps_for_img_row(
+    img_row: np.array, base_value: int, image_width: int
+) -> tuple[list[int], list[int]]:
+    """
+    Finds the gaps in a row of an image.
+
+    Args:
+        img_row (np.array): The row of the image.
+        base_value (int): The base value to compare against (the image background).
+        image_width (int): The width of the image.
+
+    Returns:
+        tuple[list[int], list[int]]: Tuple containing two lists. The first list contains the indices of the left edges of the gaps, and the second list contains the indices of the right edges of the gaps.
+    """
+    left_inds = []
+    right_inds = []
+
+    # find the gaps between the letters
+    left_inds = []
+    right_inds = []
+    new_rect_active = False
+    for col_ind, val in enumerate(img_row):
+        if val == base_value and not new_rect_active:
+            new_rect_active = True
+            left_inds.append(col_ind)
+        elif new_rect_active and val != base_value:
+            new_rect_active = False
+            right_inds.append(col_ind)
+        else:
+            continue
+
+    if new_rect_active:
+        right_inds.append(image_width)
+
+    return left_inds, right_inds
+
+
+def _make_new_rectangles(
+    rectangles: list[Rectangle],
+    row_ind: int,
+    left_inds: list[int],
+    right_inds: list[int],
+):
+
+    new_rectangles = []
+    for left_ind, right_ind in zip(left_inds, right_inds, strict=True):
+        # if the rectangle is too small
+        if right_ind - left_ind < MIN_RECTANGLE_SIDE_LENGTH:
+            continue
+        # if this is a continuation of an existing rectangle
+        extended = False
+        for rect_ind, rectangle in enumerate(rectangles):
+            if (
+                rectangle.bottom == row_ind
+                and rectangle.x == left_ind
+                and rectangle.right == right_ind
+            ):
+                rectangles[rect_ind] = Rectangle(
+                    x=rectangle.x,
+                    y=rectangle.y,
+                    width=rectangle.width,
+                    height=rectangle.height + 1,
+                )
+                extended = True
+        # otherwise it's a new rectangle
+        if not extended:
+            new_rectangles.append(
+                Rectangle(x=left_ind, y=row_ind, width=right_ind - left_ind, height=1)
+            )
+
+    return new_rectangles
+
 
 def fill_space_around_word(
     img,
-    outer_rect: Rectangle,
+    text_rect: Rectangle,
     fill_direction: str,
 ) -> list[Rectangle]:
     """
@@ -213,79 +311,60 @@ def fill_space_around_word(
 
     Args:
         img (Image): the overaall wordcloud image.
-        inner_rect (Rectangle): The rectangle containing the new text.
+        text_rect (Rectangle): The rectangle containing the new text.
+        fill_direction (str): The direction to fill the space in. Either "horizontal" or "vertical".
 
     Returns:
         list[Rectangle]: List of rectangles that fill the remaining space.
     """
 
-    img_section = img.crop(outer_rect.xyrb)
+    img_section = img.crop(text_rect.xyrb)
     img_data = np.array(img_section.quantize(2))
-    
+
     if fill_direction == "horizontal":
         img_data = img_data.T
 
-
-    base_value = img_data[0,0]
-    min_rectangle_side_length = 5
-
-    rectangles = [Rectangle(x=0,y=0, width=img_data.shape[1], height=0)]
+    base_value = img_data[0, 0]
+    rectangles = [Rectangle(x=0, y=0, width=img_data.shape[1], height=0)]
     for row_ind, img_row in enumerate(img_data):
 
         if fill_direction == "horizontal":
             img_row = img_row[::-1]
 
-        # find the gaps between the letters
-        left_inds = []
-        right_inds = []
-        new_rect_active = False
-        for col_ind, val in enumerate(img_row):
-            if val == base_value and not new_rect_active:
-                new_rect_active = True
-                left_inds.append(col_ind)
-            elif new_rect_active and val != base_value:
-                new_rect_active = False
-                right_inds.append(col_ind)
-            else:
-                continue
+        left_inds, right_inds = _find_gaps_for_img_row(
+            img_row, base_value, img_data.shape[1]
+        )
 
-        if new_rect_active:
-            right_inds.append(img_data.shape[1])
+        new_rectangles = _make_new_rectangles(
+            rectangles, row_ind, left_inds, right_inds
+        )
+        rectangles.extend(new_rectangles)
 
-        new_rectangles = []
-        for left_ind, right_ind in zip(left_inds, right_inds, strict=True):
-            # if the rectangle is too small
-            if right_ind - left_ind < min_rectangle_side_length:
-                continue
-            # if this is a continuation of an existing rectangle
-            extended = False
-            for rect_ind, rectangle in enumerate(rectangles):
-                if rectangle.bottom == row_ind and rectangle.x == left_ind and rectangle.right == right_ind:
-                    rectangles[rect_ind] = Rectangle(x=rectangle.x, y=rectangle.y, width=rectangle.width, height=rectangle.height+1)
-                    extended = True
-            # otherwise it's a new rectangle
-            if not extended:
-                new_rectangles.append(Rectangle(x=left_ind, y=row_ind, width=right_ind-left_ind, height=1))
-
-        rectangles += new_rectangles
+    rectangles = _remove_small_rectangles(rectangles)
 
     # if we rotated the image, we need to rotate the rectangles back
     if fill_direction == "horizontal":
         rotated_rectangles = []
         for rectangle in rectangles:
-            rotated_rectangles.append(Rectangle(
-                x=rectangle.y,
-                y=img_data.shape[1] - (rectangle.x + rectangle.width) ,
-                width=rectangle.height,
-                height=rectangle.width
-        ))
+            rotated_rectangles.append(
+                Rectangle(
+                    x=rectangle.y,
+                    y=img_data.shape[1] - (rectangle.x + rectangle.width),
+                    width=rectangle.height,
+                    height=rectangle.width,
+                )
+            )
         rectangles = rotated_rectangles
-        
+
     # offset the rectangles to the correct position
     rectangles = [
-        Rectangle(x=rectangle.x + outer_rect.x, y=rectangle.y + outer_rect.y, width=rectangle.width, height=rectangle.height)
-        for rectangle in rectangles 
-        if rectangle.height >= min_rectangle_side_length and rectangle.width >= min_rectangle_side_length
+        Rectangle(
+            x=rectangle.x + text_rect.x,
+            y=rectangle.y + text_rect.y,
+            width=rectangle.width,
+            height=rectangle.height,
+        )
+        for rectangle in rectangles
     ]
 
     return rectangles

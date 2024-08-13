@@ -1,6 +1,6 @@
-from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 from wrdcld.util import get_repo_root
+
 
 def get_default_font_path():
     return get_repo_root() / "fonts" / "OpenSans-Regular.ttf"
@@ -13,7 +13,7 @@ def find_fontsize_for_width(width, word):
     font_path = get_default_font_path()
     while step > 0.5:
         step /= 2
-        
+
         font = ImageFont.truetype(font_path, fontsize)
         length = font.getlength(word)
 
@@ -27,7 +27,7 @@ def find_fontsize_for_width(width, word):
 
 def draw_text(canvas, img, rectangle, word, font, rotate=False):
     """
-    
+    Draws the text on the img with the correct orientation.
     """
     FONT_COLOR = (255, 255, 0)
 
@@ -44,5 +44,10 @@ def draw_text(canvas, img, rectangle, word, font, rotate=False):
         # canvas.rectangle(rectangle.xyrb)
 
     else:
-        canvas.text((rectangle.x-text_bbox[0],rectangle.y-text_bbox[1]), word, font=font, fill=FONT_COLOR)
+        canvas.text(
+            (rectangle.x - text_bbox[0], rectangle.y - text_bbox[1]),
+            word,
+            font=font,
+            fill=FONT_COLOR,
+        )
         # canvas.rectangle(rectangle.xyrb)

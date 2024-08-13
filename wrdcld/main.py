@@ -9,6 +9,7 @@ from .rectangle import (
     fill_remaining_space_vertical,
 )
 
+
 def _fill(
     rectangle: Rectangle,
     canvas,
@@ -49,6 +50,7 @@ def _fill(
     draw_text(canvas, img, text_rectangle, word, font, rotate=rotate)
 
     return text_rectangle
+
 
 def fill_next_word(word, required_font_size, available_rectangles, img, canvas):
     font_path = get_default_font_path()
@@ -122,6 +124,12 @@ def fill_next_word(word, required_font_size, available_rectangles, img, canvas):
     )
     new_available_rectangles = fill_func(chosen_rectangle, text_rectangle)
 
-    available_rectangles_around_word = fill_space_around_word(img, text_rectangle, fill_direction)
+    available_rectangles_around_word = fill_space_around_word(
+        img, text_rectangle, fill_direction
+    )
 
-    return available_rectangles + new_available_rectangles + available_rectangles_around_word
+    return (
+        available_rectangles
+        + new_available_rectangles
+        + available_rectangles_around_word
+    )
