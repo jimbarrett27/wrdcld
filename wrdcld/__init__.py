@@ -32,8 +32,7 @@ def make_word_cloud(
             word, required_font_size, available_rectangles, img, canvas
         )
 
-
-    for rectangle in available_rectangles:
-        canvas.rectangle(rectangle.xyrb)
+    # for rectangle in available_rectangles:
+    #     canvas.rectangle(rectangle.xyrb)
 
     return img
