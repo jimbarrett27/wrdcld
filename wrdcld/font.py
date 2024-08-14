@@ -4,8 +4,9 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
-from wrdcld.util import get_repo_root
-from wrdcld.rectangle import Rectangle
+from .image import ImageWrapper
+from .rectangle import Rectangle
+from .util import get_repo_root
 
 
 @dataclass(frozen=True)
@@ -26,29 +27,19 @@ class FontWrapper:
         )
 
     def __getitem__(self, new_size: int):
-        return replace(self, size=new_size)  
+        return replace(self, size=new_size)
 
     def get_length_of_word(self, word: str) -> float:
         return self.get().getlength(word)
 
-    def find_fontsize_for_width(self, width, word):
-        fontsize = width / 2
-        step = width / 2
 
-        while step > 0.5:
-            step /= 2
-
-            length = self[fontsize].get_length_of_word(word=word)
-
-            if length < width:
-                fontsize += step
-            else:
-                fontsize -= step
-
-        return fontsize
-
-
-def draw_text(canvas, img, background_color, rectangle, word, font, rotate=False):
+def draw_text(
+    image: ImageWrapper,
+    rectangle: Rectangle,
+    word: str,
+    font: FontWrapper,
+    rotate=False,
+):
     """
     Draws the text on the img with the correct orientation.
     """
@@ -56,17 +47,17 @@ def draw_text(canvas, img, background_color, rectangle, word, font, rotate=False
     text_bbox = font.getbbox(word)
 
     if rotate:
-        text_image = Image.new("RGB", rectangle.rotated_ccw.wh, background_color)
+        text_image = Image.new("RGB", rectangle.rotated_ccw.wh, image.background_color)
         text_draw = ImageDraw.Draw(text_image)
 
         text_draw.text(
             (-text_bbox.x, -text_bbox.y), word, font=font.get(), fill=font.color
         )
         rotated_text_image = text_image.rotate(90, expand=True)
-        img.paste(rotated_text_image, rectangle.xy)
+        image.img.paste(rotated_text_image, rectangle.xy)
 
     else:
-        canvas.text(
+        image.canvas.text(
             (rectangle.x - text_bbox.x, rectangle.y - text_bbox.y),
             word,
             font=font.get(),

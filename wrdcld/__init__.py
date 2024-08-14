@@ -2,9 +2,8 @@ import math
 from collections import Counter
 from collections.abc import Callable
 
-from PIL import Image, ImageDraw
-
 from .font import FontWrapper
+from .image import ImageWrapper
 from .main import fill_next_word
 from .rectangle import Rectangle
 
@@ -23,8 +22,7 @@ def make_word_cloud(
     mask=None,  # TODO
 ):
     # Create a new image and font
-    img = Image.new("RGB", (width, height), color=background_color)
-    canvas = ImageDraw.Draw(img)
+    image = ImageWrapper(width, height, background_color)
     font = FontWrapper(color=font_color, size=maximum_font_size)
 
     # Handle data
@@ -40,7 +38,7 @@ def make_word_cloud(
             break
 
         available_rectangles = fill_next_word(
-            word, available_rectangles, img, canvas, font[required_font_size], background_color
+            word, available_rectangles, image, font[required_font_size]
         )
 
-    return img
+    return image.img

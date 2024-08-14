@@ -1,6 +1,7 @@
 import random
 
-from .font import draw_text
+from .font import FontWrapper, draw_text
+from .image import ImageWrapper
 from .rectangle import (
     Rectangle,
     fill_remaining_space_horizontal,
@@ -11,13 +12,11 @@ from .rectangle import (
 
 def _fill(
     rectangle: Rectangle,
-    canvas,
-    img,
-    background_color,
-    word_length,
-    word,
-    font,
-    rotate=False,
+    image: ImageWrapper,
+    word_length: int,
+    word: str,
+    font: FontWrapper,
+    rotate: bool = False,
 ):
     word_height = font.size
 
@@ -48,12 +47,12 @@ def _fill(
             height=word_length,
         )
 
-    draw_text(canvas, img, background_color, text_rectangle, word, font, rotate=rotate)
+    draw_text(image, text_rectangle, word, font, rotate=rotate)
 
     return text_rectangle
 
 
-def fill_next_word(word, available_rectangles, img, canvas, font, background_color):
+def fill_next_word(word, available_rectangles, image, font):
     word_length = font.get_length_of_word(word)
 
     suitable_horizontal_rectangles = [
@@ -97,16 +96,14 @@ def fill_next_word(word, available_rectangles, img, canvas, font, background_col
     if option == "horizontal":
         available_rectangles.remove(horizontal_option)
         chosen_rectangle = horizontal_option
-        text_rectangle = _fill(chosen_rectangle, canvas, img, background_color, word_length, word, font)
+        text_rectangle = _fill(chosen_rectangle, image, word_length, word, font)
 
     else:
         available_rectangles.remove(vertical_option)
         chosen_rectangle = vertical_option
         text_rectangle = _fill(
             chosen_rectangle,
-            canvas,
-            img,
-            background_color,
+            image,
             word_length,
             word,
             font,
@@ -122,7 +119,7 @@ def fill_next_word(word, available_rectangles, img, canvas, font, background_col
     new_available_rectangles = fill_func(chosen_rectangle, text_rectangle)
 
     available_rectangles_around_word = fill_space_around_word(
-        img, text_rectangle, fill_direction, background_color
+        image, text_rectangle, fill_direction
     )
 
     return (

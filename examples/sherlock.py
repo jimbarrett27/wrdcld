@@ -11,6 +11,6 @@ all_words = [word for word in all_words if word]
 make_word_cloud(
     all_words=all_words,
     font_color=(0, 0, 0),
-    background_color=(255,255,255),
+    background_color=(255, 255, 255),
     minimum_font_size=5,
 ).show()
