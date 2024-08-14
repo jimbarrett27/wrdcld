@@ -1,8 +1,6 @@
 import random
 
-from PIL import ImageFont
-
-from .font import draw_text, get_default_font_path
+from .font import draw_text
 from .rectangle import (
     Rectangle,
     fill_remaining_space_horizontal,
@@ -15,12 +13,14 @@ def _fill(
     rectangle: Rectangle,
     canvas,
     img,
+    background_color,
     word_length,
-    word_height,
     word,
     font,
     rotate=False,
 ):
+    word_height = font.size
+
     if not rotate:
         text_rectangle = Rectangle(
             x=random.uniform(
@@ -48,28 +48,24 @@ def _fill(
             height=word_length,
         )
 
-    draw_text(canvas, img, text_rectangle, word, font, rotate=rotate)
+    draw_text(canvas, img, background_color, text_rectangle, word, font, rotate=rotate)
 
     return text_rectangle
 
 
-def fill_next_word(
-    word, required_font_size, available_rectangles, img, canvas, background_color
-):
-    font_path = get_default_font_path()
-    font = ImageFont.truetype(font_path, required_font_size)
-    word_length = font.getlength(word)
+def fill_next_word(word, available_rectangles, img, canvas, font, background_color):
+    word_length = font.get_length_of_word(word)
 
     suitable_horizontal_rectangles = [
         rectangle
         for rectangle in available_rectangles
-        if rectangle.width >= word_length and rectangle.height >= required_font_size
+        if rectangle.width >= word_length and rectangle.height >= font.size
     ]
 
     suitable_vertical_rectangles = [
         rectangle
         for rectangle in available_rectangles
-        if rectangle.height >= word_length and rectangle.width >= required_font_size
+        if rectangle.height >= word_length and rectangle.width >= font.size
     ]
 
     horizontal_option = (
@@ -101,9 +97,7 @@ def fill_next_word(
     if option == "horizontal":
         available_rectangles.remove(horizontal_option)
         chosen_rectangle = horizontal_option
-        text_rectangle = _fill(
-            chosen_rectangle, canvas, img, word_length, required_font_size, word, font
-        )
+        text_rectangle = _fill(chosen_rectangle, canvas, img, background_color, word_length, word, font)
 
     else:
         available_rectangles.remove(vertical_option)
@@ -112,8 +106,8 @@ def fill_next_word(
             chosen_rectangle,
             canvas,
             img,
+            background_color,
             word_length,
-            required_font_size,
             word,
             font,
             rotate=True,
