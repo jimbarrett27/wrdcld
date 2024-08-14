@@ -59,6 +59,52 @@ class Rectangle:
             height=self.width,
         )
 
+    def is_inside(self, other: "Rectangle") -> bool:
+        """
+        Returns True if the rectangle is inside the other rectangle.
+
+        Args:
+            other (Rectangle): The other rectangle.
+
+        Returns:
+            bool: True if the rectangle is inside the other rectangle.
+        """
+        return (
+            self.x >= other.x
+            and self.y >= other.y
+            and self.right <= other.right
+            and self.bottom <= other.bottom
+        )
+
+    def overlaps(self, other: "Rectangle") -> bool:
+        """
+        Returns True if the rectangle overlaps with the other rectangle.
+
+        Args:
+            other (Rectangle): The other rectangle.
+
+        Returns:
+            bool: True if the rectangle overlaps with the other rectangle.
+        """
+        return (
+            self.x < other.right
+            and self.right > other.x
+            and self.y < other.bottom
+            and self.bottom > other.y
+        )
+
+    def contains_other(self, other: "Rectangle") -> bool:
+        """
+        Returns True if the rectangle contains the other rectangle.
+
+        Args:
+            other (Rectangle): The other rectangle.
+
+        Returns:
+            bool: True if the rectangle contains the other rectangle.
+        """
+        return other.is_inside(self)
+
     def __repr__(self):
         return f"Rectangle(x={int(self.x)} y={int(self.y)} w={int(self.width)} h={int(self.height)})"
 
@@ -305,6 +351,7 @@ def fill_space_around_word(
     img,
     text_rect: Rectangle,
     fill_direction: str,
+    background_color: tuple[int, int, int],
 ) -> list[Rectangle]:
     """
     Returns a list of rectangles that fill the remaining space
@@ -313,6 +360,7 @@ def fill_space_around_word(
         img (Image): the overaall wordcloud image.
         text_rect (Rectangle): The rectangle containing the new text.
         fill_direction (str): The direction to fill the space in. Either "horizontal" or "vertical".
+        background_color (tuple[int, int, int]): The background color of the image.
 
     Returns:
         list[Rectangle]: List of rectangles that fill the remaining space.
@@ -323,6 +371,17 @@ def fill_space_around_word(
 
     # get the image data as a 2D array
     img_data = img_section.quantize(2).getdata()
+
+    # find the base value
+    base_value = None
+    for original, quantised in zip(img_section.getdata(), img_data):
+        if original == background_color:
+            base_value = quantised
+            break
+
+    if base_value is None:
+        raise ValueError("The background color was not found in the image.")
+
     # img_data = [val for val in img_data]
     img_data = list(img_data)
     img_data = [
@@ -333,7 +392,6 @@ def fill_space_around_word(
     if fill_direction == "horizontal":
         img_data = list(zip(*img_data))
 
-    base_value = img_data[0][0]
     rectangles = [Rectangle(x=0, y=0, width=len(img_data[0]), height=0)]
     for row_ind, img_row in enumerate(img_data):
 

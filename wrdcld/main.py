@@ -53,7 +53,9 @@ def _fill(
     return text_rectangle
 
 
-def fill_next_word(word, required_font_size, available_rectangles, img, canvas):
+def fill_next_word(
+    word, required_font_size, available_rectangles, img, canvas, background_color
+):
     font_path = get_default_font_path()
     font = ImageFont.truetype(font_path, required_font_size)
     word_length = font.getlength(word)
@@ -88,7 +90,7 @@ def fill_next_word(word, required_font_size, available_rectangles, img, canvas):
         options.append("vertical")
 
     if not options:
-        # print(f"skipping word '{word}', couldn't find a good rectangle")
+        print(f"skipping word '{word}', couldn't find a good rectangle")
         return available_rectangles
 
     if len(options) == 1:
@@ -126,7 +128,7 @@ def fill_next_word(word, required_font_size, available_rectangles, img, canvas):
     new_available_rectangles = fill_func(chosen_rectangle, text_rectangle)
 
     available_rectangles_around_word = fill_space_around_word(
-        img, text_rectangle, fill_direction
+        img, text_rectangle, fill_direction, background_color
     )
 
     return (
