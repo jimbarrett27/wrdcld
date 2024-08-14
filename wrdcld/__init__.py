@@ -15,7 +15,7 @@ def make_word_cloud(
     height: int = 500,
     font_color: tuple[int, int, int] = (255, 255, 0),  # TODO
     background_color: tuple[int, int, int] = (73, 109, 137),
-    minimum_font_size: int = 1,
+    minimum_font_size: int = 5,
     maximum_font_size: int = 100,
     word_padding: int = 0,  # TODO
     scaling_func: Callable[[float], float] = math.sqrt,  # TODO
