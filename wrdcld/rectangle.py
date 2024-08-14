@@ -1,9 +1,7 @@
 from dataclasses import dataclass
 import math
-import numpy as np
 
 MIN_RECTANGLE_SIDE_LENGTH = 5
-
 
 @dataclass(frozen=True)
 class Rectangle:
@@ -229,13 +227,13 @@ def fill_remaining_space_vertical(
 
 
 def _find_gaps_for_img_row(
-    img_row: np.array, base_value: int, image_width: int
+    img_row: list[int], base_value: int, image_width: int
 ) -> tuple[list[int], list[int]]:
     """
     Finds the gaps in a row of an image.
 
     Args:
-        img_row (np.array): The row of the image.
+        img_row (list[int]): The row of the image.
         base_value (int): The base value to compare against (the image background).
         image_width (int): The width of the image.
 
@@ -292,6 +290,7 @@ def _make_new_rectangles(
                     height=rectangle.height + 1,
                 )
                 extended = True
+                break
         # otherwise it's a new rectangle
         if not extended:
             new_rectangles.append(
@@ -319,20 +318,26 @@ def fill_space_around_word(
     """
 
     img_section = img.crop(text_rect.xyrb)
-    img_data = np.array(img_section.quantize(2))
+    img_width, img_height = img_section.size
+    
+    # get the image data as a 2D array
+    img_data = img_section.quantize(2).getdata()
+    img_data = [val for val in img_data]
+    img_data = [img_data[i * img_width : (i + 1) * img_width] for i in range(img_height)]
 
+    # transpose
     if fill_direction == "horizontal":
-        img_data = img_data.T
+        img_data = list(zip(*img_data))
 
-    base_value = img_data[0, 0]
-    rectangles = [Rectangle(x=0, y=0, width=img_data.shape[1], height=0)]
+    base_value = img_data[0][0]
+    rectangles = [Rectangle(x=0, y=0, width=len(img_data[0]), height=0)]
     for row_ind, img_row in enumerate(img_data):
 
         if fill_direction == "horizontal":
             img_row = img_row[::-1]
 
         left_inds, right_inds = _find_gaps_for_img_row(
-            img_row, base_value, img_data.shape[1]
+            img_row, base_value, len(img_data[0])
         )
 
         new_rectangles = _make_new_rectangles(
@@ -349,7 +354,7 @@ def fill_space_around_word(
             rotated_rectangles.append(
                 Rectangle(
                     x=rectangle.y,
-                    y=img_data.shape[1] - (rectangle.x + rectangle.width),
+                    y=len(img_data[0]) - (rectangle.x + rectangle.width),
                     width=rectangle.height,
                     height=rectangle.width,
                 )
