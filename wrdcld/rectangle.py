@@ -351,6 +351,7 @@ def fill_space_around_word(
     img,
     text_rect: Rectangle,
     fill_direction: str,
+    background_color: tuple[int, int, int],
 ) -> list[Rectangle]:
     """
     Returns a list of rectangles that fill the remaining space
@@ -369,6 +370,11 @@ def fill_space_around_word(
 
     # get the image data as a 2D array
     img_data = img_section.quantize(2).getdata()
+
+    for original, quantised in zip(img_section.getdata(), img_data):
+        if original == background_color:
+            base_value = quantised
+
     # img_data = [val for val in img_data]
     img_data = list(img_data)
     img_data = [
@@ -379,7 +385,6 @@ def fill_space_around_word(
     if fill_direction == "horizontal":
         img_data = list(zip(*img_data))
 
-    base_value = img_data[0][0]
     rectangles = [Rectangle(x=0, y=0, width=len(img_data[0]), height=0)]
     for row_ind, img_row in enumerate(img_data):
 
