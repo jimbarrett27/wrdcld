@@ -37,7 +37,12 @@ def make_word_cloud(
             break
 
         available_rectangles = fill_next_word(
-            word, required_font_size, available_rectangles, img, canvas, background_color
+            word,
+            required_font_size,
+            available_rectangles,
+            img,
+            canvas,
+            background_color,
         )
 
     return img
