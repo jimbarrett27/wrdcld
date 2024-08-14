@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from src.rectangle import Rectangle
+from wrdcld.rectangle import Rectangle
 
 
 class TestRectangle(TestCase):

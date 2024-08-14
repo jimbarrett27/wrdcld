@@ -1,5 +1,6 @@
-from collections import Counter
 import math
+from collections import Counter
+
 from PIL import Image, ImageDraw
 
 from .main import fill_next_word
@@ -32,7 +33,7 @@ def make_word_cloud(
             word, required_font_size, available_rectangles, img, canvas
         )
 
-        # img.show()
-        # input()
+    # for rectangle in available_rectangles:
+    #     canvas.rectangle(rectangle.xyrb)
 
     return img

@@ -39,8 +39,9 @@ jobs:
       - name: Linting
         run: |
           source .venv/bin/activate
-          poetry run black src tests --check
-          poetry run pylint src tests
+          poetry run isort wrdcld tests --check
+          poetry run black wrdcld tests --check
+          poetry run pylint wrdcld tests
 
       - name: Tests
         run: |
