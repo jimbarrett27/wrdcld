@@ -23,4 +23,8 @@ class TestWordCloud(TestCase):
     @given(words=words_with_repeats_strategy())
     def test_make_word_cloud(self, words: list[str]):
 
-        _ = make_word_cloud(words)
+        background_color = (0, 0, 0)
+        word_cloud = make_word_cloud(words, background_color=background_color)
+
+        self.assertIsNotNone(word_cloud)
+        self.assertFalse(all(pixel == background_color for pixel in word_cloud.getdata()))
