@@ -377,6 +377,7 @@ def fill_space_around_word(
     for original, quantised in zip(img_section.getdata(), img_data):
         if original == background_color:
             base_value = quantised
+            break
 
     if base_value is None:
         raise ValueError("The background color was not found in the image.")
