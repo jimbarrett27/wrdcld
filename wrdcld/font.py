@@ -1,4 +1,5 @@
 from PIL import Image, ImageDraw, ImageFont
+
 from wrdcld.util import get_repo_root
 
 

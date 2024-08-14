@@ -1,7 +1,8 @@
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
 
 MIN_RECTANGLE_SIDE_LENGTH = 5
+
 
 @dataclass(frozen=True)
 class Rectangle:
@@ -319,11 +320,14 @@ def fill_space_around_word(
 
     img_section = img.crop(text_rect.xyrb)
     img_width, img_height = img_section.size
-    
+
     # get the image data as a 2D array
     img_data = img_section.quantize(2).getdata()
-    img_data = [val for val in img_data]
-    img_data = [img_data[i * img_width : (i + 1) * img_width] for i in range(img_height)]
+    # img_data = [val for val in img_data]
+    img_data = list(img_data)
+    img_data = [
+        img_data[i * img_width : (i + 1) * img_width] for i in range(img_height)
+    ]
 
     # transpose
     if fill_direction == "horizontal":

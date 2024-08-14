@@ -1,5 +1,6 @@
-from collections import Counter
 import math
+from collections import Counter
+
 from PIL import Image, ImageDraw
 
 from .main import fill_next_word

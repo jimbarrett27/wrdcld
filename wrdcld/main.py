@@ -1,12 +1,13 @@
 import random
+
 from PIL import ImageFont
 
 from .font import draw_text, get_default_font_path
 from .rectangle import (
     Rectangle,
-    fill_space_around_word,
     fill_remaining_space_horizontal,
     fill_remaining_space_vertical,
+    fill_space_around_word,
 )
 
 
