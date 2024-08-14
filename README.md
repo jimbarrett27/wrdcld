@@ -5,7 +5,7 @@ A predictable, interpretable wordcloud library
 Run `poetry install`
 
 ## Development
-Run `poetry run black wrdcld` and `poetry run pylint wrdcld` for styling and linting.
+Run `poetry run black wrdcld tests` and `poetry run pylint wrdcld tests` for styling and linting.
 
 ## Testing
 Run `python -m unittest discover tests/`
