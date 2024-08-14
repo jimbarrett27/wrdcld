@@ -1,7 +1,9 @@
+from pathlib import Path
+
 from collections import Counter
 from wrdcld import make_word_cloud
 
-with open("dancingmen.txt") as f:
+with open(Path("examples/dancingmen.txt"), encoding="utf-8") as f:
     contents = f.read()
 
 words = [word.strip(" \n,.!?:-&\"'") for word in contents.split(" ")]
