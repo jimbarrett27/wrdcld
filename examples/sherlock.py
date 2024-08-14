@@ -1,13 +1,14 @@
 from pathlib import Path
 
-from collections import Counter
 from wrdcld import make_word_cloud
 
 with open(Path("examples/dancingmen.txt"), encoding="utf-8") as f:
     contents = f.read()
 
-words = [word.strip(" \n,.!?:-&\"'") for word in contents.split(" ")]
-words = [word for word in words if word]
-data = Counter(words)
+all_words = [word.strip(" \n,.!?:-&\"'") for word in contents.split(" ")]
+all_words = [word for word in all_words if word]
 
-make_word_cloud(data).show()
+make_word_cloud(
+    all_words=all_words,
+    minimum_font_size=5,
+).show()
