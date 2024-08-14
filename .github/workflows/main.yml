@@ -39,6 +39,7 @@ jobs:
       - name: Linting
         run: |
           source .venv/bin/activate
+          poetry run isort src tests --check
           poetry run black src tests --check
           poetry run pylint src tests
 
