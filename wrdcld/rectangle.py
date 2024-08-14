@@ -58,6 +58,52 @@ class Rectangle:
             width=self.height,
             height=self.width,
         )
+    
+    def is_inside(self, other: "Rectangle") -> bool:
+        """
+        Returns True if the rectangle is inside the other rectangle.
+
+        Args:
+            other (Rectangle): The other rectangle.
+
+        Returns:
+            bool: True if the rectangle is inside the other rectangle.
+        """
+        return (
+            self.x >= other.x
+            and self.y >= other.y
+            and self.right <= other.right
+            and self.bottom <= other.bottom
+        )
+    
+    def overlaps(self, other: "Rectangle") -> bool:
+        """
+        Returns True if the rectangle overlaps with the other rectangle.
+
+        Args:
+            other (Rectangle): The other rectangle.
+
+        Returns:
+            bool: True if the rectangle overlaps with the other rectangle.
+        """
+        return (
+            self.x < other.right
+            and self.right > other.x
+            and self.y < other.bottom
+            and self.bottom > other.y
+        )
+    
+    def contains_other(self, other: "Rectangle") -> bool:
+        """
+        Returns True if the rectangle contains the other rectangle.
+
+        Args:
+            other (Rectangle): The other rectangle.
+
+        Returns:
+            bool: True if the rectangle contains the other rectangle.
+        """
+        return other.is_inside(self)
 
     def __repr__(self):
         return f"Rectangle(x={int(self.x)} y={int(self.y)} w={int(self.width)} h={int(self.height)})"
