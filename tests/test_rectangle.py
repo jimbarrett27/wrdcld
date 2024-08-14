@@ -1,5 +1,4 @@
 import math
-from string import ascii_letters, digits, punctuation
 from unittest import TestCase
 
 import hypothesis.strategies as st
@@ -62,13 +61,11 @@ def text_image_and_rectangle_strategy(draw):
     """
     Generates an image with text and a rectangle that contains the text
     """
-    # don't generate purely whitespace
-    text = draw(
-        st.text(alphabet=ascii_letters + digits + punctuation, min_size=1, max_size=10)
-    )
+
+    text = draw(st.text(min_size=1, max_size=10))
 
     font_path = get_default_font_path()
-    font_size = draw(st.integers(min_value=50, max_value=100))
+    font_size = draw(st.integers(min_value=5, max_value=100))
     font = ImageFont.truetype(font_path, font_size)
     text_bbox = font.getbbox(text)
 
