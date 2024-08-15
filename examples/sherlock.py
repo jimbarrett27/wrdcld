@@ -2,7 +2,7 @@ from pathlib import Path
 
 from wrdcld import make_word_cloud
 
-contents = Path("examples/dancingmen.txt").read_text()
+contents = Path("examples/dancingmen.txt").read_text(encoding="utf-8")
 
 all_words = [word.strip(" \n,.!?:-&\"'[]") for word in contents.split(" ")]
 all_words = [word for word in all_words if word]
