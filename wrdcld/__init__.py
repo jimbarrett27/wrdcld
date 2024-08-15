@@ -2,8 +2,8 @@ import math
 from collections import Counter
 from collections.abc import Callable
 
-from PIL import Image, ImageDraw
-
+from .font import FontWrapper
+from .image import ImageWrapper
 from .main import fill_next_word
 from .rectangle import Rectangle
 
@@ -21,15 +21,16 @@ def make_word_cloud(
     scaling_func: Callable[[float], float] = math.sqrt,  # TODO
     mask=None,  # TODO
 ):
-    # Create a new image
-    img = Image.new("RGB", (width, height), color=background_color)
-    canvas = ImageDraw.Draw(img)
+    # Create a new image and font
+    image = ImageWrapper(width, height, background_color)
+    font = FontWrapper(color=font_color, size=maximum_font_size)
 
+    # Handle data
     word_counts = Counter(all_words)
-
     _, first_count = word_counts.most_common(1)[0]
-
     available_rectangles = [Rectangle(width=500, height=500, x=0, y=0)]
+
+    # Main loop
     for word, count in word_counts.most_common():
         required_font_size = maximum_font_size * math.sqrt(count / first_count)
 
@@ -37,12 +38,7 @@ def make_word_cloud(
             break
 
         available_rectangles = fill_next_word(
-            word,
-            required_font_size,
-            available_rectangles,
-            img,
-            canvas,
-            background_color,
+            word, available_rectangles, image, font[required_font_size]
         )
 
-    return img
+    return image.img

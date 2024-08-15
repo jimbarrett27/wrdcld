@@ -1,6 +1,8 @@
 import math
 from dataclasses import dataclass
 
+from .image import ImageWrapper
+
 MIN_RECTANGLE_SIDE_LENGTH = 5
 
 
@@ -348,23 +350,24 @@ def _make_new_rectangles(
 
 
 def fill_space_around_word(
-    img,
+    image: ImageWrapper,
     text_rect: Rectangle,
     fill_direction: str,
-    background_color: tuple[int, int, int],
 ) -> list[Rectangle]:
     """
     Returns a list of rectangles that fill the remaining space
 
     Args:
-        img (Image): the overaall wordcloud image.
+        image (Image): the overall wordcloud image.
         text_rect (Rectangle): The rectangle containing the new text.
         fill_direction (str): The direction to fill the space in. Either "horizontal" or "vertical".
-        background_color (tuple[int, int, int]): The background color of the image.
 
     Returns:
         list[Rectangle]: List of rectangles that fill the remaining space.
     """
+
+    img = image.img
+    background_color = image.background_color
 
     img_section = img.crop(text_rect.xyrb)
     img_width, img_height = img_section.size
