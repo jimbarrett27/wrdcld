@@ -16,9 +16,9 @@ from pathlib import Path
 
 from wrdcld import make_word_cloud
 
-content = Path("examples/dancingmen.txt").read_text()
+contents = Path("examples/dancingmen.txt").read_text()
 
-all_words = [word.strip(" \n,.!?:-&\"'") for word in contents.split(" ")]
+all_words = [word.strip(" \n,.!?:-&\"'[]") for word in contents.split(" ")]
 all_words = [word for word in all_words if word]
 
 make_word_cloud(
