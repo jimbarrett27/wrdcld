@@ -3,9 +3,9 @@ from unittest import TestCase
 
 import hypothesis.strategies as st
 from hypothesis import given
-from PIL import Image, ImageDraw, ImageFont
 
-from wrdcld.font import get_default_font_path
+from wrdcld.font import FontWrapper
+from wrdcld.image import ImageWrapper
 from wrdcld.rectangle import (
     MIN_RECTANGLE_SIDE_LENGTH,
     Rectangle,
@@ -64,20 +64,25 @@ def text_image_and_rectangle_strategy(draw):
 
     text = draw(st.text(min_size=1, max_size=10))
 
-    font_path = get_default_font_path()
     font_size = draw(st.integers(min_value=5, max_value=100))
-    font = ImageFont.truetype(font_path, font_size)
+    font = FontWrapper(size=font_size)
     text_bbox = font.getbbox(text)
 
     img_rectangle = Rectangle(
-        width=math.ceil(font.getlength(text)), height=font_size, x=0, y=0
+        width=math.ceil(font.get_length_of_word(text)), height=font_size, x=0, y=0
     )
-    img = Image.new("RGB", (img_rectangle.width, img_rectangle.height), (255, 255, 255))
-    canvas = ImageDraw.Draw(img)
 
-    canvas.text((-text_bbox[0], -text_bbox[1]), text, font=font, fill=(0, 0, 0))
+    image = ImageWrapper(
+        width=img_rectangle.width,
+        height=img_rectangle.height,
+        background_color=(255, 255, 255),
+    )
 
-    return img, img_rectangle
+    image.canvas.text(
+        (-text_bbox.x, -text_bbox.y), text, font=font.get(), fill=(0, 0, 0)
+    )
+
+    return image, img_rectangle
 
 
 class TestRectangle(TestCase):
@@ -136,16 +141,15 @@ class TestRectangle(TestCase):
         """
         Test that after filling the space around a word, that there are no pixels of the font color in the new rectangles
         """
-        img, img_rectangle = text_image_and_rectangle
+        image, img_rectangle = text_image_and_rectangle
         new_rectangles = fill_space_around_word(
-            img,
+            image,
             img_rectangle,
             fill_direction=fill_direction,
-            background_color=(255, 255, 255),
         )
         for r in new_rectangles:
             self.assertTrue(r.is_inside(img_rectangle))
 
-            img_on_rectangle = img.crop(r.xyrb)
+            img_on_rectangle = image.img.crop(r.xyrb)
             image_section_data = img_on_rectangle.getdata()
             self.assertTrue(all(d != (0, 0, 0) for d in image_section_data))

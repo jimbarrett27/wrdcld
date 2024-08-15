@@ -1,8 +1,7 @@
 import random
 
-from PIL import ImageFont
-
-from .font import draw_text, get_default_font_path
+from .font import FontWrapper, draw_text
+from .image import ImageWrapper
 from .rectangle import (
     Rectangle,
     fill_remaining_space_horizontal,
@@ -13,14 +12,14 @@ from .rectangle import (
 
 def _fill(
     rectangle: Rectangle,
-    canvas,
-    img,
-    word_length,
-    word_height,
-    word,
-    font,
-    rotate=False,
+    image: ImageWrapper,
+    word_length: int,
+    word: str,
+    font: FontWrapper,
+    rotate: bool = False,
 ):
+    word_height = font.size
+
     if not rotate:
         text_rectangle = Rectangle(
             x=random.uniform(
@@ -48,28 +47,24 @@ def _fill(
             height=word_length,
         )
 
-    draw_text(canvas, img, text_rectangle, word, font, rotate=rotate)
+    draw_text(image, text_rectangle, word, font, rotate=rotate)
 
     return text_rectangle
 
 
-def fill_next_word(
-    word, required_font_size, available_rectangles, img, canvas, background_color
-):
-    font_path = get_default_font_path()
-    font = ImageFont.truetype(font_path, required_font_size)
-    word_length = font.getlength(word)
+def fill_next_word(word, available_rectangles, image, font):
+    word_length = font.get_length_of_word(word)
 
     suitable_horizontal_rectangles = [
         rectangle
         for rectangle in available_rectangles
-        if rectangle.width >= word_length and rectangle.height >= required_font_size
+        if rectangle.width >= word_length and rectangle.height >= font.size
     ]
 
     suitable_vertical_rectangles = [
         rectangle
         for rectangle in available_rectangles
-        if rectangle.height >= word_length and rectangle.width >= required_font_size
+        if rectangle.height >= word_length and rectangle.width >= font.size
     ]
 
     horizontal_option = (
@@ -101,19 +96,15 @@ def fill_next_word(
     if option == "horizontal":
         available_rectangles.remove(horizontal_option)
         chosen_rectangle = horizontal_option
-        text_rectangle = _fill(
-            chosen_rectangle, canvas, img, word_length, required_font_size, word, font
-        )
+        text_rectangle = _fill(chosen_rectangle, image, word_length, word, font)
 
     else:
         available_rectangles.remove(vertical_option)
         chosen_rectangle = vertical_option
         text_rectangle = _fill(
             chosen_rectangle,
-            canvas,
-            img,
+            image,
             word_length,
-            required_font_size,
             word,
             font,
             rotate=True,
@@ -128,7 +119,7 @@ def fill_next_word(
     new_available_rectangles = fill_func(chosen_rectangle, text_rectangle)
 
     available_rectangles_around_word = fill_space_around_word(
-        img, text_rectangle, fill_direction, background_color
+        image, text_rectangle, fill_direction
     )
 
     return (
