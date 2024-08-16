@@ -42,6 +42,7 @@ jobs:
           poetry run isort wrdcld tests examples --check
           poetry run black wrdcld tests examples --check
           poetry run pylint wrdcld tests examples
+          poetry run mypy wrdcld
 
       - name: Tests
         run: |
