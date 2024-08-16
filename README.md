@@ -9,7 +9,7 @@ pip install wrdcld
 
 ## Basic Usage
 
-To make a basic wordcloud, you simply pass a list of words to the `make_wordcloud` function. Here is a basic example generating a word cloud of the Sherlock Holmes story __The adventure of the dancing men__.
+To make a basic wordcloud, you simply pass a list of words to the `make_word_cloud` function. Here is a basic example generating a word cloud of the Sherlock Holmes story __The adventure of the dancing men__.
 
 ```python
 from pathlib import Path
