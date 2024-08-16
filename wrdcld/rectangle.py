@@ -289,12 +289,9 @@ def _find_gaps_for_img_row(
     Returns:
         tuple[list[int], list[int]]: Tuple containing two lists. The first list contains the indices of the left edges of the gaps, and the second list contains the indices of the right edges of the gaps.
     """
-    left_inds = []
-    right_inds = []
-
     # find the gaps between the letters
-    left_inds = []
-    right_inds = []
+    left_inds: list[int] = []
+    right_inds: list[int] = []
     new_rect_active = False
     for col_ind, val in enumerate(img_row):
         if val == base_value and not new_rect_active:

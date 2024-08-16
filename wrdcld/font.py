@@ -12,7 +12,7 @@ from .util import get_repo_root
 @dataclass(frozen=True)
 class FontWrapper:
     path: Path = get_repo_root() / "fonts" / "OpenSans-Regular.ttf"
-    size: int = (1,)
+    size: int = 1
     color: tuple[int, int, int] = (255, 255, 0)
 
     @lru_cache(maxsize=1024)
@@ -26,8 +26,9 @@ class FontWrapper:
             x=bbox[0], y=bbox[1], width=bbox[2] - bbox[0], height=bbox[3] - bbox[1]
         )
 
-    def __getitem__(self, new_size: int):
-        return replace(self, size=new_size)
+    def __getitem__(self, new_size: float):
+        rounded_new_size = int(round(new_size))
+        return replace(self, size=rounded_new_size)
 
     def get_length_of_word(self, word: str) -> float:
         return self.get().getlength(word)
