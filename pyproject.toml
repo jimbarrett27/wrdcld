@@ -5,6 +5,10 @@ description = "A predictable, interpretable wordcloud library"
 authors = ["Jim Barrett <jimbarrett27@gmail.com>", "Marcus Näslund <naslundx@gmail.com>"]
 license = "GPLv3"
 readme = "README.md"
+include = [
+    "fonts/*"
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.9"
