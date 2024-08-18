@@ -317,7 +317,7 @@ def _make_new_rectangles(
 ):
 
     new_rectangles = []
-    for left_ind, right_ind in zip(left_inds, right_inds, strict=True):
+    for left_ind, right_ind in zip(left_inds, right_inds):
         # if the rectangle is too small
         if right_ind - left_ind < MIN_RECTANGLE_SIDE_LENGTH:
             continue
