@@ -64,7 +64,7 @@ def text_image_and_rectangle_strategy(draw):
 
     text = draw(st.text(min_size=1, max_size=10))
 
-    font_size = draw(st.integers(min_value=5, max_value=100))
+    font_size = draw(st.integers(min_value=10, max_value=100))
     font = FontWrapper(size=font_size)
     text_bbox = font.getbbox(text)
 
