@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
  
 ### Fixed
 - Custom width and height now supported
+- A default font file is correctly include in the build
  
 ## [0.1] - 2024-08-15
 
