@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import math
+import random
 from collections import Counter
 from collections.abc import Callable
-import random
+from dataclasses import replace
 from pathlib import Path
 
 from .font import FontWrapper
@@ -51,7 +52,9 @@ def make_word_cloud(
     )
 
     actual_max_fontsize = font.find_fontsize_for_width(width, all_words[0])
-    font.size = min(maximum_font_size, actual_max_fontsize)
+
+    if actual_max_fontsize < maximum_font_size:
+        font = replace(font, size=actual_max_fontsize)
 
     # Handle data
     word_counts = Counter(all_words)

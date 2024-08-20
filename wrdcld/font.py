@@ -36,15 +36,15 @@ class FontWrapper:
 
     def get_length_of_word(self, word: str) -> float:
         return self.get().getlength(word)
-    
-    def find_fontsize_for_width(self, width: int, word: str)->int:
+
+    def find_fontsize_for_width(self, width: int, word: str) -> int:
         fontsize = width / 2
         step = width / 2
 
         while step > 0.5:
             step /= 2
 
-            length = self.length_of_word(fontsize=fontsize, word=word)
+            length = self.get_length_of_word(word=word)
 
             if length < width:
                 fontsize += step
@@ -52,7 +52,6 @@ class FontWrapper:
                 fontsize -= step
 
         return int(fontsize)
- 
 
     @staticmethod
     def default_font():

@@ -71,7 +71,10 @@ def text_image_and_rectangle_strategy(draw):
     text_bbox = font.getbbox(text)
 
     img_rectangle = Rectangle(
-        width=max(math.ceil(font.get_length_of_word(text)), 1), height=font_size, x=0, y=0
+        width=max(math.ceil(font.get_length_of_word(text)), 1),
+        height=font_size,
+        x=0,
+        y=0,
     )
 
     image = ImageWrapper(
