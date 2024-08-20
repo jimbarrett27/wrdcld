@@ -65,7 +65,9 @@ def text_image_and_rectangle_strategy(draw):
     text = draw(st.text(min_size=1, max_size=10))
 
     font_size = draw(st.integers(min_value=10, max_value=100))
-    font = FontWrapper(size=font_size)
+    font = FontWrapper(
+        size=font_size, color_func=lambda _: (0, 0, 0), path=FontWrapper.default_font()
+    )
     text_bbox = font.getbbox(text)
 
     img_rectangle = Rectangle(
