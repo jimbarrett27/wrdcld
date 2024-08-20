@@ -24,7 +24,6 @@ def make_word_cloud(
     background_color: Color = (73, 109, 137),
     minimum_font_size: int = 10,
     maximum_font_size: int = 100,
-    first_rectangle_fraction: float = 0.4,
     word_padding: int = 0,  # TODO
     scaling_func: Callable[[float], float] = math.sqrt,
     mask=None,  # TODO
@@ -50,6 +49,9 @@ def make_word_cloud(
     font = FontWrapper(
         path=font_path, color_func=font_color_func, size=maximum_font_size
     )
+
+    actual_max_fontsize = font.find_fontsize_for_width(width, all_words[0])
+    font.size = min(maximum_font_size, actual_max_fontsize)
 
     # Handle data
     word_counts = Counter(all_words)
