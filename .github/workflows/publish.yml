@@ -1,0 +1,58 @@
+name: Publish to PyPI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: 'Ubuntu, python 3.12'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up python
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          virtualenvs-path: .venv
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+
+      - name: Install project
+        run: poetry install --no-interaction
+
+      - name: Linting
+        run: |
+          source .venv/bin/activate
+          poetry run isort wrdcld tests examples --check
+          poetry run black wrdcld tests examples --check
+          poetry run pylint wrdcld tests examples
+          poetry run mypy wrdcld
+
+      - name: Tests
+        run: |
+          source .venv/bin/activate
+          python -m unittest discover tests/
+
+      - name: Publish to PyPI
+        run: |
+          poetry publish --build
