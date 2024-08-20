@@ -5,6 +5,10 @@ on: pull_request
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.10', '3.11', '3.12' ]
+    name: 'Ubuntu, python ${{ matrix.python-version }}'
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -13,7 +17,7 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: ${{ matrix.python-version }}
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -42,6 +46,7 @@ jobs:
           poetry run isort wrdcld tests examples --check
           poetry run black wrdcld tests examples --check
           poetry run pylint wrdcld tests examples
+          poetry run mypy wrdcld
 
       - name: Tests
         run: |

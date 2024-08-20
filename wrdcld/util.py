@@ -1,4 +1,7 @@
 from pathlib import Path
+from typing import TypeAlias
+
+Color: TypeAlias = tuple[int, int, int]
 
 
 def get_repo_root():
