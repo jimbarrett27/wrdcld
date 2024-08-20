@@ -21,7 +21,7 @@ def make_word_cloud(
     font_color: Color = (255, 255, 0),
     font_color_func: Callable[[float], Color] | None = None,
     background_color: Color = (73, 109, 137),
-    minimum_font_size: int = 1,
+    minimum_font_size: int = 10,
     maximum_font_size: int = 100,
     word_padding: int = 0,  # TODO
     scaling_func: Callable[[float], float] = math.sqrt,
