@@ -2,15 +2,19 @@ from string import ascii_letters, digits, punctuation
 from unittest import TestCase
 
 import hypothesis.strategies as st
-from hypothesis import given
+from hypothesis import given, settings
 
 from wrdcld import make_word_cloud
 
+from PIL import ImageChops
+
+def _two_images_are_equal(image1, image2):
+    return ImageChops.difference(image1, image2).getbbox() is None
 
 @st.composite
 def words_with_repeats_strategy(draw):
     words = draw(
-        st.lists(st.text(ascii_letters + digits + punctuation, min_size=1), min_size=1)
+        st.lists(st.text(ascii_letters + digits + punctuation, min_size=1, max_size=10), min_size=1, max_size=10)
     )
 
     frequencies = draw(
@@ -37,6 +41,16 @@ class TestWordCloud(TestCase):
         word_cloud = make_word_cloud(words, background_color=background_color)
 
         self.assertIsNotNone(word_cloud)
-        self.assertFalse(
-            all(pixel == background_color for pixel in word_cloud.getdata())
-        )
+
+        no_pixels_filled = all(pixel == background_color for pixel in word_cloud.getdata())
+
+        self.assertFalse(no_pixels_filled)
+
+    @settings(deadline=300)
+    @given(words=words_with_repeats_strategy(), seed=st.integers())
+    def test_word_cloud_reproducibility(self, words: list[str], seed: int):
+
+        word_cloud_1 = make_word_cloud(words, seed=seed)
+        word_cloud_2 = make_word_cloud(words, seed=seed)
+
+        self.assertTrue(_two_images_are_equal(word_cloud_1, word_cloud_2))

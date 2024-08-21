@@ -43,6 +43,10 @@ def make_word_cloud(
         font_color is not None or font_color_func is not None
     ), "Must specify a fixed font color or function"
 
+    # Count the words
+    word_counts = Counter(all_words)
+    first_word, first_count = word_counts.most_common(1)[0]
+
     # Create a new image and font
     font_path = font_path or FontWrapper.default_font()
     font_color_func = font_color_func or (lambda _: font_color)
@@ -51,14 +55,11 @@ def make_word_cloud(
         path=font_path, color_func=font_color_func, size=maximum_font_size
     )
 
-    actual_max_fontsize = font.find_fontsize_for_width(width, all_words[0])
+    actual_max_fontsize = font.find_fontsize_for_width(width, first_word)
 
     if actual_max_fontsize < maximum_font_size:
+        maximum_font_size = actual_max_fontsize
         font = replace(font, size=actual_max_fontsize)
-
-    # Handle data
-    word_counts = Counter(all_words)
-    _, first_count = word_counts.most_common(1)[0]
 
     available_rectangles = [Rectangle(width=width, height=height, x=0, y=0)]
     for word, count in word_counts.most_common():
