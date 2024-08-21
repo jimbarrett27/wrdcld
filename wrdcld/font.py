@@ -43,7 +43,7 @@ class FontWrapper:
         test_font = replace(self, size=1)
         if test_font.get_length_of_word(word) > width:
             raise ValueError(f"Impossible to fit word '{word}' in width {width}")
-        
+
         # Start with half of the initial size and step size as half of that
         fontsize = self.size / 2
         step = fontsize / 2
@@ -68,11 +68,8 @@ class FontWrapper:
             fontsize -= 1
             final_font = replace(self, size=int(fontsize))
             final_length = final_font.get_length_of_word(word=word)
-            
 
         return int(fontsize)
-
-
 
     @staticmethod
     def default_font():

@@ -3,18 +3,23 @@ from unittest import TestCase
 
 import hypothesis.strategies as st
 from hypothesis import given, settings
+from PIL import ImageChops
 
 from wrdcld import make_word_cloud
 
-from PIL import ImageChops
 
 def _two_images_are_equal(image1, image2):
     return ImageChops.difference(image1, image2).getbbox() is None
 
+
 @st.composite
 def words_with_repeats_strategy(draw):
     words = draw(
-        st.lists(st.text(ascii_letters + digits + punctuation, min_size=1, max_size=10), min_size=1, max_size=10)
+        st.lists(
+            st.text(ascii_letters + digits + punctuation, min_size=1, max_size=10),
+            min_size=1,
+            max_size=10,
+        )
     )
 
     frequencies = draw(
@@ -42,7 +47,9 @@ class TestWordCloud(TestCase):
 
         self.assertIsNotNone(word_cloud)
 
-        no_pixels_filled = all(pixel == background_color for pixel in word_cloud.getdata())
+        no_pixels_filled = all(
+            pixel == background_color for pixel in word_cloud.getdata()
+        )
 
         self.assertFalse(no_pixels_filled)
 
