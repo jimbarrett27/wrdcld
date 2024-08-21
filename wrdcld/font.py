@@ -37,6 +37,40 @@ class FontWrapper:
     def get_length_of_word(self, word: str) -> float:
         return self.get().getlength(word)
 
+    def find_fontsize_for_width(self, width: int, word: str) -> int:
+
+        # Check if the word can fit even with the smallest font size
+        test_font = replace(self, size=1)
+        if test_font.get_length_of_word(word) > width:
+            raise ValueError(f"Impossible to fit word '{word}' in width {width}")
+
+        # Start with half of the initial size and step size as half of that
+        fontsize = self.size / 2
+        step = fontsize / 2
+
+        # Perform binary search for the correct font size
+        while step > 0.5:
+            test_font = replace(self, size=int(fontsize))
+            length = test_font.get_length_of_word(word=word)
+
+            if length <= width:
+                fontsize += step
+            else:
+                fontsize -= step
+
+            step /= 2
+
+        final_font = replace(self, size=int(fontsize))
+        final_length = final_font.get_length_of_word(word=word)
+
+        # Ensure the final font size fits within the width
+        while final_length > width:
+            fontsize -= 1
+            final_font = replace(self, size=int(fontsize))
+            final_length = final_font.get_length_of_word(word=word)
+
+        return int(fontsize)
+
     @staticmethod
     def default_font():
         return get_repo_root() / "fonts" / "OpenSans-Regular.ttf"
