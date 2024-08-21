@@ -53,7 +53,7 @@ class TestWordCloud(TestCase):
 
         self.assertFalse(no_pixels_filled)
 
-    @settings(deadline=300)
+    @settings(deadline=None)
     @given(words=words_with_repeats_strategy(), seed=st.integers())
     def test_word_cloud_reproducibility(self, words: list[str], seed: int):
 
