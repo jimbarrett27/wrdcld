@@ -80,9 +80,9 @@ def fill_next_word(
             suitable_vertical_rectangles.append(rectangle)
 
     direction_options = []
-    if len(suitable_horizontal_rectangles) == 0:
+    if len(suitable_horizontal_rectangles) > 0:
         direction_options.append("horizontal")
-    if len(suitable_vertical_rectangles) == 0:
+    if len(suitable_vertical_rectangles) > 0:
         direction_options.append("vertical")
 
     if not direction_options:
