@@ -160,3 +160,17 @@ class TestRectangle(TestCase):
             img_on_rectangle = image.img.crop(r.xyrb)
             image_section_data = img_on_rectangle.getdata()
             self.assertTrue(all(d != (0, 0, 0) for d in image_section_data))
+
+    @given(
+        rectangle=rectangle_strategy(),
+        padding_fraction=st.floats(min_value=0.1, max_value=0.9),
+    )
+    def test_padded_subrectangle(self, rectangle: Rectangle, padding_fraction: float):
+
+        unpadded_rectangle = rectangle.get_subrectangle_with_padding(0)
+        self.assertEqual(unpadded_rectangle, rectangle)
+
+        padding = int(padding_fraction * min(rectangle.width, rectangle.height))
+        padded_rectangle = rectangle.get_subrectangle_with_padding(padding)
+
+        self.assertTrue(padded_rectangle.is_inside(rectangle))

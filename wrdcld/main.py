@@ -13,7 +13,7 @@ from .rectangle import (
 def _fill(
     rectangle: Rectangle,
     image: ImageWrapper,
-    word_length: int,
+    word_length: float,
     word: str,
     font: FontWrapper,
     frequency: float,
@@ -53,57 +53,60 @@ def _fill(
     return text_rectangle
 
 
-def fill_next_word(word, available_rectangles, image, font, frequency):
+def fill_next_word(
+    word: str,
+    available_rectangles: list[Rectangle],
+    image: ImageWrapper,
+    font: FontWrapper,
+    frequency,
+    word_padding: int,
+):
     word_length = font.get_length_of_word(word)
 
-    suitable_horizontal_rectangles = [
-        rectangle
-        for rectangle in available_rectangles
-        if rectangle.width >= word_length and rectangle.height >= font.size
-    ]
+    suitable_horizontal_rectangles = []
+    suitable_vertical_rectangles = []
+    for rectangle in available_rectangles:
+        padded_rectangle = rectangle.get_subrectangle_with_padding(word_padding)
 
-    suitable_vertical_rectangles = [
-        rectangle
-        for rectangle in available_rectangles
-        if rectangle.height >= word_length and rectangle.width >= font.size
-    ]
+        if (
+            padded_rectangle.width >= word_length
+            and padded_rectangle.height >= font.size
+        ):
+            suitable_horizontal_rectangles.append(rectangle)
+        if (
+            padded_rectangle.height >= word_length
+            and padded_rectangle.width >= font.size
+        ):
+            suitable_vertical_rectangles.append(rectangle)
 
-    horizontal_option = (
-        max(suitable_horizontal_rectangles, key=lambda x: x.area)
-        if suitable_horizontal_rectangles
-        else None
-    )
-    vertical_option = (
-        max(suitable_vertical_rectangles, key=lambda x: x.area)
-        if suitable_vertical_rectangles
-        else None
-    )
+    direction_options = []
+    if len(suitable_horizontal_rectangles) > 0:
+        direction_options.append("horizontal")
+    if len(suitable_vertical_rectangles) > 0:
+        direction_options.append("vertical")
 
-    options = []
-    if horizontal_option is not None:
-        options.append("horizontal")
-    if vertical_option is not None:
-        options.append("vertical")
-
-    if not options:
+    if not direction_options:
         # print(f"skipping word '{word}', couldn't find a good rectangle")
         return available_rectangles
 
-    if len(options) == 1:
-        option = options[0]
+    if len(direction_options) == 1:
+        chosen_direction = direction_options[0]
     else:
-        option = random.choices(options, weights=(0.9, 0.1))[0]
+        chosen_direction = random.choices(direction_options, weights=(0.9, 0.1))[0]
 
-    if option == "horizontal":
-        available_rectangles.remove(horizontal_option)
-        chosen_rectangle = horizontal_option
+    if chosen_direction == "horizontal":
+        horizontal_choice = max(suitable_horizontal_rectangles, key=lambda x: x.area)
+
+        available_rectangles.remove(horizontal_choice)
+        chosen_rectangle = horizontal_choice.get_subrectangle_with_padding(word_padding)
         text_rectangle = _fill(
             chosen_rectangle, image, word_length, word, font, frequency
         )
 
     else:
-        available_rectangles.remove(vertical_option)
-        chosen_rectangle = vertical_option
+        vertical_choice = max(suitable_vertical_rectangles, key=lambda x: x.area)
+        available_rectangles.remove(vertical_choice)
+        chosen_rectangle = vertical_choice.get_subrectangle_with_padding(word_padding)
         text_rectangle = _fill(
             chosen_rectangle,
             image,

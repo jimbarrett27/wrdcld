@@ -25,7 +25,7 @@ def make_word_cloud(
     background_color: Color = (73, 109, 137),
     minimum_font_size: int = 10,
     maximum_font_size: int = 100,
-    word_padding: int = 0,  # TODO
+    word_padding: int = 0,
     scaling_func: Callable[[float], float] = math.sqrt,
     mask=None,  # TODO
     seed: int | float | str | bytes | bytearray | None = None,
@@ -70,7 +70,12 @@ def make_word_cloud(
             break
 
         available_rectangles = fill_next_word(
-            word, available_rectangles, image, font[required_font_size], frequency
+            word,
+            available_rectangles,
+            image,
+            font[required_font_size],
+            frequency,
+            word_padding=word_padding,
         )
 
     return image.img
