@@ -71,7 +71,10 @@ def text_image_and_rectangle_strategy(draw):
     text_bbox = font.getbbox(text)
 
     img_rectangle = Rectangle(
-        width=math.ceil(font.get_length_of_word(text)), height=font_size, x=0, y=0
+        width=max(math.ceil(font.get_length_of_word(text)), 1),
+        height=font_size,
+        x=0,
+        y=0,
     )
 
     image = ImageWrapper(
@@ -144,11 +147,13 @@ class TestRectangle(TestCase):
         Test that after filling the space around a word, that there are no pixels of the font color in the new rectangles
         """
         image, img_rectangle = text_image_and_rectangle
+
         new_rectangles = fill_space_around_word(
             image,
             img_rectangle,
             fill_direction=fill_direction,
         )
+
         for r in new_rectangles:
             self.assertTrue(r.is_inside(img_rectangle))
 

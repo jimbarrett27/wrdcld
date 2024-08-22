@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import math
+import random
 from collections import Counter
 from collections.abc import Callable
+from dataclasses import replace
 from pathlib import Path
 
 from .font import FontWrapper
@@ -26,7 +28,10 @@ def make_word_cloud(
     word_padding: int = 0,  # TODO
     scaling_func: Callable[[float], float] = math.sqrt,
     mask=None,  # TODO
+    seed: int | float | str | bytes | bytearray | None = None,
 ):
+    if seed is not None:
+        random.seed(seed)
     # Asserts
     assert len(all_words) > 0, "No words in list"
     assert width > 0, "Width must be a positive number (in pixels)"
@@ -38,6 +43,10 @@ def make_word_cloud(
         font_color is not None or font_color_func is not None
     ), "Must specify a fixed font color or function"
 
+    # Count the words
+    word_counts = Counter(all_words)
+    first_word, first_count = word_counts.most_common(1)[0]
+
     # Create a new image and font
     font_path = font_path or FontWrapper.default_font()
     font_color_func = font_color_func or (lambda _: font_color)
@@ -46,9 +55,11 @@ def make_word_cloud(
         path=font_path, color_func=font_color_func, size=maximum_font_size
     )
 
-    # Handle data
-    word_counts = Counter(all_words)
-    _, first_count = word_counts.most_common(1)[0]
+    actual_max_fontsize = font.find_fontsize_for_width(width, first_word)
+
+    if actual_max_fontsize < maximum_font_size:
+        maximum_font_size = actual_max_fontsize
+        font = replace(font, size=actual_max_fontsize)
 
     available_rectangles = [Rectangle(width=width, height=height, x=0, y=0)]
     for word, count in word_counts.most_common():

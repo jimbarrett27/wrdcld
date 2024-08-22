@@ -86,7 +86,7 @@ def fill_next_word(word, available_rectangles, image, font, frequency):
         options.append("vertical")
 
     if not options:
-        print(f"skipping word '{word}', couldn't find a good rectangle")
+        # print(f"skipping word '{word}', couldn't find a good rectangle")
         return available_rectangles
 
     if len(options) == 1:
