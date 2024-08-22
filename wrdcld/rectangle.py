@@ -106,7 +106,7 @@ class Rectangle:
             bool: True if the rectangle contains the other rectangle.
         """
         return other.is_inside(self)
-    
+
     def get_subrectangle_with_padding(self, padding: int) -> "Rectangle":
         """
         Returns a subrectangle of the rectangle with padding.
