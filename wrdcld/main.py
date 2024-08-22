@@ -53,20 +53,19 @@ def _fill(
     return text_rectangle
 
 
-def fill_next_word(word, available_rectangles, image, font, frequency):
+def fill_next_word(word: str, available_rectangles: list[Rectangle], image: ImageWrapper, font: FontWrapper, frequency, word_padding: int):
     word_length = font.get_length_of_word(word)
 
-    suitable_horizontal_rectangles = [
-        rectangle
-        for rectangle in available_rectangles
-        if rectangle.width >= word_length and rectangle.height >= font.size
-    ]
+    suitable_horizontal_rectangles = []
+    suitable_vertical_rectangles = []
+    for rectangle in available_rectangles:
+        padded_rectangle = rectangle.get_subrectangle_with_padding(word_padding)
 
-    suitable_vertical_rectangles = [
-        rectangle
-        for rectangle in available_rectangles
-        if rectangle.height >= word_length and rectangle.width >= font.size
-    ]
+        if padded_rectangle.width >= word_length and padded_rectangle.height >= font.size:
+            suitable_horizontal_rectangles.append(rectangle)
+        if padded_rectangle.height >= word_length and padded_rectangle.width >= font.size:
+            suitable_vertical_rectangles.append(rectangle)
+
 
     horizontal_option = (
         max(suitable_horizontal_rectangles, key=lambda x: x.area)
@@ -96,14 +95,14 @@ def fill_next_word(word, available_rectangles, image, font, frequency):
 
     if option == "horizontal":
         available_rectangles.remove(horizontal_option)
-        chosen_rectangle = horizontal_option
+        chosen_rectangle = horizontal_option.get_subrectangle_with_padding(word_padding)
         text_rectangle = _fill(
             chosen_rectangle, image, word_length, word, font, frequency
         )
 
     else:
         available_rectangles.remove(vertical_option)
-        chosen_rectangle = vertical_option
+        chosen_rectangle = vertical_option.get_subrectangle_with_padding(word_padding)
         text_rectangle = _fill(
             chosen_rectangle,
             image,
