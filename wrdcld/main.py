@@ -1,4 +1,4 @@
-import random
+from random import Random
 
 from .font import FontWrapper, draw_text
 from .image import ImageWrapper
@@ -13,9 +13,10 @@ from .rectangle import (
 def _fill(
     rectangle: Rectangle,
     image: ImageWrapper,
-    word_length: int,
+    word_length: float,
     word: str,
     font: FontWrapper,
+    random_generator: Random,
     frequency: float,
     rotate: bool = False,
 ):
@@ -23,11 +24,11 @@ def _fill(
 
     if not rotate:
         text_rectangle = Rectangle(
-            x=random.uniform(
+            x=random_generator.uniform(
                 rectangle.x,
                 rectangle.x + rectangle.width - word_length,
             ),
-            y=random.uniform(
+            y=random_generator.uniform(
                 rectangle.y,
                 rectangle.y + rectangle.height - word_height,
             ),
@@ -36,11 +37,11 @@ def _fill(
         )
     else:
         text_rectangle = Rectangle(
-            x=random.uniform(
+            x=random_generator.uniform(
                 rectangle.x,
                 rectangle.x + rectangle.width - word_height,
             ),
-            y=random.uniform(
+            y=random_generator.uniform(
                 rectangle.y,
                 rectangle.y + rectangle.height - word_length,
             ),
@@ -53,7 +54,14 @@ def _fill(
     return text_rectangle
 
 
-def fill_next_word(word, available_rectangles, image, font, frequency):
+def fill_next_word(
+    word: str,
+    available_rectangles,
+    image: ImageWrapper,
+    font: FontWrapper,
+    frequency: float,
+    random_generator: Random,
+):
     word_length = font.get_length_of_word(word)
 
     suitable_horizontal_rectangles = [
@@ -92,32 +100,33 @@ def fill_next_word(word, available_rectangles, image, font, frequency):
     if len(options) == 1:
         option = options[0]
     else:
-        option = random.choices(options, weights=(0.9, 0.1))[0]
+        option = random_generator.choices(options, weights=(0.9, 0.1))[0]
 
     if option == "horizontal":
         available_rectangles.remove(horizontal_option)
         chosen_rectangle = horizontal_option
-        text_rectangle = _fill(
-            chosen_rectangle, image, word_length, word, font, frequency
-        )
+        rotate = False
 
     else:
         available_rectangles.remove(vertical_option)
         chosen_rectangle = vertical_option
-        text_rectangle = _fill(
-            chosen_rectangle,
-            image,
-            word_length,
-            word,
-            font,
-            frequency,
-            rotate=True,
-        )
+        rotate = True
 
-    fill_direction = random.choice(["horizontal", "vertical"])
+    text_rectangle = _fill(
+        chosen_rectangle,
+        image,
+        word_length,
+        word,
+        font,
+        random_generator,
+        frequency,
+        rotate,
+    )
+
+    fill_direction = random_generator.choice(["horizontal", "vertical"])
 
     # figure out new available rectangles
-    fill_func = random.choice(
+    fill_func = random_generator.choice(
         [fill_remaining_space_horizontal, fill_remaining_space_vertical]
     )
     new_available_rectangles = fill_func(chosen_rectangle, text_rectangle)
