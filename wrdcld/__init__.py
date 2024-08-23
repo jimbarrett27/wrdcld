@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import os
 import random
 from collections import Counter
 from collections.abc import Callable
@@ -30,8 +31,10 @@ def make_word_cloud(
     mask=None,  # TODO
     seed: int | float | str | bytes | bytearray | None = None,
 ):
-    if seed is not None:
-        random.seed(seed)
+    random_generator = random.Random(
+        seed or int.from_bytes(os.urandom(8), byteorder="big")
+    )
+
     # Asserts
     assert len(all_words) > 0, "No words in list"
     assert width > 0, "Width must be a positive number (in pixels)"
@@ -70,7 +73,12 @@ def make_word_cloud(
             break
 
         available_rectangles = fill_next_word(
-            word, available_rectangles, image, font[required_font_size], frequency
+            word,
+            available_rectangles,
+            image,
+            font[required_font_size],
+            frequency,
+            random_generator,
         )
 
     return image.img
