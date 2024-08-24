@@ -13,7 +13,7 @@ from .rectangle import (
 def _fill(
     rectangle: Rectangle,
     image: ImageWrapper,
-    word_length: int,
+    word_length: float,
     word: str,
     font: FontWrapper,
     frequency: float,
@@ -53,7 +53,13 @@ def _fill(
     return text_rectangle
 
 
-def fill_next_word(word, available_rectangles, image, font, frequency):
+def fill_next_word(
+    word: str,
+    available_rectangles: list,
+    image: ImageWrapper,
+    font: FontWrapper,
+    frequency: float,
+):
     word_length = font.get_length_of_word(word)
 
     suitable_horizontal_rectangles = [

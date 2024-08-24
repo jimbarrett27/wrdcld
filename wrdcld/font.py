@@ -4,6 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
+from PIL.ImageFont import FreeTypeFont
 
 from .image import ImageWrapper
 from .rectangle import Rectangle
@@ -20,17 +21,17 @@ class FontWrapper:
         return self.color_func(frequency)
 
     @lru_cache(maxsize=1024)
-    def get(self):
-        return ImageFont.truetype(self.path, self.size)
+    def get(self) -> FreeTypeFont:
+        return ImageFont.truetype(str(self.path), self.size)
 
     @lru_cache(maxsize=1024)
-    def getbbox(self, word: str):
+    def getbbox(self, word: str) -> Rectangle:
         bbox = self.get().getbbox(word)
         return Rectangle(
             x=bbox[0], y=bbox[1], width=bbox[2] - bbox[0], height=bbox[3] - bbox[1]
         )
 
-    def __getitem__(self, new_size: float):
+    def __getitem__(self, new_size: float) -> "FontWrapper":
         rounded_new_size = int(round(new_size))
         return replace(self, size=rounded_new_size)
 
@@ -38,7 +39,6 @@ class FontWrapper:
         return self.get().getlength(word)
 
     def find_fontsize_for_width(self, width: int, word: str) -> int:
-
         # Check if the word can fit even with the smallest font size
         test_font = replace(self, size=1)
         if test_font.get_length_of_word(word) > width:
@@ -72,7 +72,7 @@ class FontWrapper:
         return int(fontsize)
 
     @staticmethod
-    def default_font():
+    def default_font() -> Path:
         return get_repo_root() / "fonts" / "OpenSans-Regular.ttf"
 
 
@@ -91,7 +91,7 @@ def draw_text(
     text_bbox = font.getbbox(word)
 
     if rotate:
-        text_image = Image.new("RGB", rectangle.rotated_ccw.wh, image.background_color)
+        text_image = Image.new("RGB", rectangle.rotated_ccw.wh, image.background_color)  # type: ignore
         text_draw = ImageDraw.Draw(text_image)
 
         text_draw.text(
@@ -101,7 +101,7 @@ def draw_text(
             fill=font.color(frequency),
         )
         rotated_text_image = text_image.rotate(90, expand=True)
-        image.img.paste(rotated_text_image, rectangle.xy)
+        image.img.paste(rotated_text_image, rectangle.xy)  # type: ignore
 
     else:
         image.canvas.text(
