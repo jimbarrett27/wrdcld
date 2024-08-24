@@ -1,3 +1,4 @@
+from collections import Counter
 from string import ascii_letters, digits, punctuation
 from unittest import TestCase
 
@@ -56,8 +57,9 @@ class TestWordCloud(TestCase):
     @settings(deadline=None)
     @given(words=words_with_repeats_strategy(), seed=st.integers())
     def test_word_cloud_reproducibility(self, words: list[str], seed: int):
+        counter = Counter(words)
 
         word_cloud_1 = make_word_cloud(words, seed=seed)
-        word_cloud_2 = make_word_cloud(words, seed=seed)
+        word_cloud_2 = make_word_cloud(counter, seed=seed)
 
         self.assertTrue(_two_images_are_equal(word_cloud_1, word_cloud_2))

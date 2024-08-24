@@ -16,7 +16,7 @@ from .util import Color
 
 # pylint: disable=unused-argument
 def make_word_cloud(
-    all_words: list[str],
+    all_words: list[str] | Counter,
     width: int = 500,
     height: int = 500,
     font_path: Path | None = None,
@@ -32,6 +32,7 @@ def make_word_cloud(
 ):
     if seed is not None:
         random.seed(seed)
+
     # Asserts
     assert len(all_words) > 0, "No words in list"
     assert width > 0, "Width must be a positive number (in pixels)"
@@ -42,9 +43,13 @@ def make_word_cloud(
     assert (
         font_color is not None or font_color_func is not None
     ), "Must specify a fixed font color or function"
+    assert isinstance(all_words, (list, Counter)), "Word supply must be list or Counter"
 
     # Count the words
-    word_counts = Counter(all_words)
+    if isinstance(all_words, list):
+        word_counts = Counter(all_words)
+    else:
+        word_counts = all_words
     first_word, first_count = word_counts.most_common(1)[0]
 
     # Create a new image and font
