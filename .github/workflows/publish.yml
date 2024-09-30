@@ -1,0 +1,18 @@
+name: Publish to PyPI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: 'Ubuntu, python 3.12'
+    steps:
+      - name: Lint and Reformat
+        uses: ./.github/actions/setup-environment-and-stylecheck
+
+      - name: Publish to PyPI
+        run: |
+          poetry publish --build
