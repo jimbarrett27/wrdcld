@@ -7,6 +7,8 @@ from collections.abc import Callable
 from dataclasses import replace
 from pathlib import Path
 
+from PIL.Image import Image
+
 from .font import FontWrapper
 from .image import ImageWrapper
 from .main import fill_next_word
@@ -27,9 +29,9 @@ def make_word_cloud(
     maximum_font_size: int = 100,
     word_padding: int = 0,  # TODO
     scaling_func: Callable[[float], float] = math.sqrt,
-    mask=None,  # TODO
+    mask: Image | None = None,  # TODO
     seed: int | float | str | bytes | bytearray | None = None,
-):
+) -> Image:
     if seed is not None:
         random.seed(seed)
 

@@ -11,5 +11,5 @@ else:
     Color = Tuple[int, int, int]
 
 
-def get_repo_root():
+def get_repo_root() -> Path:
     return Path(__file__).parent.parent

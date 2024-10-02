@@ -14,43 +14,43 @@ class Rectangle:
     y: float
 
     @property
-    def xy(self):
+    def xy(self) -> tuple[float, float]:
         """
         Returns the coordinates of the rectangle as a tuple (x, y).
         """
         return (int(self.x + 0.5), int(self.y + 0.5))
 
     @property
-    def wh(self):
+    def wh(self) -> tuple[float, float]:
         """
         Returns the width and height of the rectangle as a tuple (width, height).
         """
         return (math.ceil(self.width), math.ceil(self.height))
 
     @property
-    def right(self):
+    def right(self) -> float:
         return self.x + self.width
 
     @property
-    def bottom(self):
+    def bottom(self) -> float:
         return self.y + self.height
 
     @property
-    def xyrb(self):
+    def xyrb(self) -> tuple[float, float, float, float]:
         """
         Returns the coordinates of the rectangle as a tuple (x, y, right, bottom).
         """
         return (self.x, self.y, self.x + self.width, self.y + self.height)
 
     @property
-    def area(self):
+    def area(self) -> float:
         """
         Returns the area of the rectangle.
         """
         return self.width * self.height
 
     @property
-    def rotated_ccw(self):
+    def rotated_ccw(self) -> "Rectangle":
         """
         Returns a new rectangle that is rotated 90 degrees counter-clockwise.
         """
@@ -107,7 +107,7 @@ class Rectangle:
         """
         return other.is_inside(self)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Rectangle(x={int(self.x)} y={int(self.y)} w={int(self.width)} h={int(self.height)})"
 
 
@@ -314,7 +314,7 @@ def _make_new_rectangles(
     row_ind: int,
     left_inds: list[int],
     right_inds: list[int],
-):
+) -> list[Rectangle]:
 
     new_rectangles = []
     for left_ind, right_ind in zip(left_inds, right_inds):
@@ -366,7 +366,7 @@ def fill_space_around_word(
     img = image.img
     background_color = image.background_color
 
-    img_section = img.crop(text_rect.xyrb)
+    img_section = img.crop(text_rect.xyrb)  # type: ignore
     img_width, img_height = img_section.size
 
     # get the image data as a 2D array
