@@ -62,6 +62,7 @@ def _fill(
     word_length: int,
     word: str,
     font: FontWrapper,
+    frequency: float,
     rotate: bool = False,
 ):
     word_height = font.size
@@ -93,12 +94,12 @@ def _fill(
             height=word_length,
         )
 
-    draw_text(image, text_rectangle, word, font, rotate=rotate)
+    draw_text(image, text_rectangle, word, font, frequency, rotate=rotate)
 
     return text_rectangle
 
 
-def fill_next_word(word, available_rectangles, image, font):
+def fill_next_word(word, available_rectangles, image, font, frequency):
     word_length = font.get_length_of_word(word)
 
     suitable_horizontal_rectangles = [
@@ -142,7 +143,9 @@ def fill_next_word(word, available_rectangles, image, font):
     if option == "horizontal":
         available_rectangles.remove(horizontal_option)
         chosen_rectangle = horizontal_option
-        text_rectangle = _fill(chosen_rectangle, image, word_length, word, font)
+        text_rectangle = _fill(
+            chosen_rectangle, image, word_length, word, font, frequency
+        )
 
     else:
         available_rectangles.remove(vertical_option)
@@ -153,6 +156,7 @@ def fill_next_word(word, available_rectangles, image, font):
             word_length,
             word,
             font,
+            frequency,
             rotate=True,
         )
 

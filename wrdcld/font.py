@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from dataclasses import dataclass, replace
 from functools import lru_cache
 from pathlib import Path
@@ -6,14 +7,17 @@ from PIL import Image, ImageDraw, ImageFont
 
 from .image import ImageWrapper
 from .rectangle import Rectangle
-from .util import get_repo_root
+from .util import Color, get_repo_root
 
 
 @dataclass(frozen=True)
 class FontWrapper:
-    path: Path = get_repo_root() / "fonts" / "OpenSans-Regular.ttf"
+    color_func: Callable[[float], Color]
+    path: Path
     size: int = 1
-    color: tuple[int, int, int] = (255, 255, 0)
+
+    def color(self, frequency: float) -> Color:
+        return self.color_func(frequency)
 
     @lru_cache(maxsize=1024)
     def get(self):
@@ -33,12 +37,17 @@ class FontWrapper:
     def get_length_of_word(self, word: str) -> float:
         return self.get().getlength(word)
 
+    @staticmethod
+    def default_font():
+        return get_repo_root() / "fonts" / "OpenSans-Regular.ttf"
+
 
 def draw_text(
     image: ImageWrapper,
     rectangle: Rectangle,
     word: str,
     font: FontWrapper,
+    frequency: float,
     rotate=False,
 ):
     """
@@ -52,7 +61,10 @@ def draw_text(
         text_draw = ImageDraw.Draw(text_image)
 
         text_draw.text(
-            (-text_bbox.x, -text_bbox.y), word, font=font.get(), fill=font.color
+            (-text_bbox.x, -text_bbox.y),
+            word,
+            font=font.get(),
+            fill=font.color(frequency),
         )
         rotated_text_image = text_image.rotate(90, expand=True)
         image.img.paste(rotated_text_image, rectangle.xy)
@@ -62,5 +74,5 @@ def draw_text(
             (rectangle.x - text_bbox.x, rectangle.y - text_bbox.y),
             word,
             font=font.get(),
-            fill=font.color,
+            fill=font.color(frequency),
         )

@@ -1,10 +1,14 @@
 [tool.poetry]
 name = "wrdcld"
-version = "0.1.0"
+version = "0.2.0"
 description = "A predictable, interpretable wordcloud library"
 authors = ["Jim Barrett <jimbarrett27@gmail.com>", "Marcus Näslund <naslundx@gmail.com>"]
 license = "GPLv3"
 readme = "README.md"
+include = [
+    "fonts/*"
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.9"
