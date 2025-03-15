@@ -1,4 +1,5 @@
 import random
+from logging import getLogger
 
 from .font import FontWrapper, draw_text
 from .image import ImageWrapper
@@ -8,6 +9,8 @@ from .rectangle import (
     fill_remaining_space_vertical,
     fill_space_around_word,
 )
+
+LOGGER = getLogger(__name__)
 
 
 # pylint: disable=(too-many-positional-arguments)
@@ -61,6 +64,9 @@ def fill_next_word(
     font: FontWrapper,
     frequency: float,
 ):
+
+    available_rectangles = available_rectangles.copy()
+
     word_length = font.get_length_of_word(word)
 
     suitable_horizontal_rectangles = [
@@ -92,9 +98,9 @@ def fill_next_word(
             rotate = True
 
     else:
-        print(f"skipping word '{word}', couldn't find a good rectangle")
+        LOGGER.warning("skipping word '%s', couldn't find a good rectangle", word)
         return available_rectangles
-    
+
     available_rectangles.remove(chosen_rectangle)
 
     text_rectangle = _fill(
@@ -124,5 +130,3 @@ def fill_next_word(
         + new_available_rectangles
         + available_rectangles_around_word
     )
-
-
