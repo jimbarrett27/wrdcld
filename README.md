@@ -32,10 +32,10 @@ make_word_cloud(
 # Development
 
 ## Setup
-Run `poetry install`
+Run `uv sync`
 
 ## Development
-Run `poetry run isort wrdcld tests`, `poetry run black wrdcld tests` and `poetry run pylint wrdcld tests` for styling and linting.
+Run `uv run isort wrdcld tests examples`, `uv run black wrdcld tests examples`, `uv run pylint wrdcld tests examples` and `uv run mypy wrdcld tests examples` for styling and linting.
 
 ## Testing
-Run `python -m unittest discover tests/`
+Run `uv run python -m unittest discover tests/`
