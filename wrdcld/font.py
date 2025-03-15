@@ -76,6 +76,7 @@ class FontWrapper:
         return get_repo_root() / "fonts" / "OpenSans-Regular.ttf"
 
 
+# pylint: disable=(too-many-positional-arguments)
 def draw_text(
     image: ImageWrapper,
     rectangle: Rectangle,

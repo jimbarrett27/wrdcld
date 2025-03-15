@@ -9,7 +9,7 @@ from .rectangle import (
     fill_space_around_word,
 )
 
-
+# pylint: disable=(too-many-positional-arguments)
 def _fill(
     rectangle: Rectangle,
     image: ImageWrapper,
