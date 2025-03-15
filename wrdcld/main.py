@@ -1,7 +1,13 @@
-from logging import getLogger
+from __future__ import annotations
+
 import math
 from collections import Counter
 from collections.abc import Callable
+from dataclasses import replace
+from logging import getLogger
+from pathlib import Path
+
+from PIL.Image import Image
 
 from .font import FontWrapper, draw_text
 from .image import ImageWrapper
@@ -11,27 +17,9 @@ from .rectangle import (
     fill_remaining_space_vertical,
     fill_space_around_word,
 )
-from .util import get_random_state
+from .util import Color, get_random_state
 
 LOGGER = getLogger(__name__)
-
-
-# pylint: disable=unused-argument
-from __future__ import annotations
-
-import math
-from collections import Counter
-from collections.abc import Callable
-from dataclasses import replace
-from pathlib import Path
-
-from PIL.Image import Image
-
-from .font import FontWrapper
-from .image import ImageWrapper
-from .main import fill_next_word
-from .rectangle import Rectangle
-from .util import Color, get_random_state
 
 
 # pylint: disable=(unused-argument, too-many-positional-arguments)
@@ -99,6 +87,7 @@ def make_word_cloud(
         )
 
     return image.img
+
 
 def _fill(
     rectangle: Rectangle,
