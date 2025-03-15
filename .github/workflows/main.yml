@@ -36,4 +36,4 @@ jobs:
 
       - name: Tests
         run: |
-          uv run unittest discover tests/
+          uv run python -m unittest discover tests/
