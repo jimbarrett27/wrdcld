@@ -19,36 +19,21 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
         with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          virtualenvs-path: .venv
-
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v4
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          enable-cache: true
 
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
-
-      - name: Install project
-        run: poetry install --no-interaction
+        run: uv sync -p matrix.python-version
 
       - name: Linting
         run: |
-          source .venv/bin/activate
-          poetry run isort wrdcld tests examples --check
-          poetry run black wrdcld tests examples --check
-          poetry run pylint wrdcld tests examples
-          poetry run mypy wrdcld
+          uv run isort wrdcld tests examples --check
+          uv run black wrdcld tests examples --check
+          uv run pylint wrdcld tests examples
+          uv run mypy wrdcld
 
       - name: Tests
         run: |
-          source .venv/bin/activate
-          python -m unittest discover tests/
+          uv run unittest discover tests/
