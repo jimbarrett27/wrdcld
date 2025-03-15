@@ -1,4 +1,3 @@
-import random
 from logging import getLogger
 
 from .font import FontWrapper, draw_text
@@ -9,6 +8,7 @@ from .rectangle import (
     fill_remaining_space_vertical,
     fill_space_around_word,
 )
+from .util import get_random_state
 
 LOGGER = getLogger(__name__)
 
@@ -23,15 +23,18 @@ def _fill(
     frequency: float,
     rotate: bool = False,
 ):
+
+    random_state = get_random_state()
+
     word_height = font.size
 
     if not rotate:
         text_rectangle = Rectangle(
-            x=random.uniform(
+            x=random_state.uniform(
                 rectangle.x,
                 rectangle.x + rectangle.width - word_length,
             ),
-            y=random.uniform(
+            y=random_state.uniform(
                 rectangle.y,
                 rectangle.y + rectangle.height - word_height,
             ),
@@ -40,11 +43,11 @@ def _fill(
         )
     else:
         text_rectangle = Rectangle(
-            x=random.uniform(
+            x=random_state.uniform(
                 rectangle.x,
                 rectangle.x + rectangle.width - word_height,
             ),
-            y=random.uniform(
+            y=random_state.uniform(
                 rectangle.y,
                 rectangle.y + rectangle.height - word_length,
             ),
@@ -64,6 +67,8 @@ def fill_next_word(
     font: FontWrapper,
     frequency: float,
 ):
+
+    random_state = get_random_state()
 
     available_rectangles = available_rectangles.copy()
 
@@ -90,7 +95,7 @@ def fill_next_word(
         rotate = True
 
     elif suitable_horizontal_rectangles and suitable_vertical_rectangles:
-        use_horizontal = random.random() < 0.5
+        use_horizontal = random_state.random() < 0.5
         if use_horizontal:
             chosen_rectangle = max(suitable_horizontal_rectangles, key=lambda x: x.area)
         else:
@@ -113,10 +118,10 @@ def fill_next_word(
         rotate=rotate,
     )
 
-    fill_direction = random.choice(["horizontal", "vertical"])
+    fill_direction = random_state.choice(["horizontal", "vertical"])
 
     # figure out new available rectangles
-    fill_func = random.choice(
+    fill_func = random_state.choice(
         [fill_remaining_space_horizontal, fill_remaining_space_vertical]
     )
     new_available_rectangles = fill_func(chosen_rectangle, text_rectangle)
