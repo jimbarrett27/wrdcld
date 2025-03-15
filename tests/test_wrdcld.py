@@ -73,18 +73,21 @@ class TestWordCloud(TestCase):
 
         self.assertTrue(_two_images_are_equal(word_cloud_1, word_cloud_2))
 
-    
     @settings(deadline=None)
-    @given(words=words_with_repeats_strategy(), seeds=st.sets(st.integers(), min_size=2, max_size=2))    
-    def test_word_cloud_seed_differences(self, words: list[str], seeds: int):
+    @given(
+        words=words_with_repeats_strategy(),
+        seeds=st.sets(st.integers(), min_size=2, max_size=2),
+    )
+    def test_word_cloud_seed_differences(
+        self, words: list[str], seeds: tuple[int, int]
+    ):
         """
         Test that two word clouds with different seeds are different
         """
-        
+
         seed1, seed2 = seeds
 
         word_cloud_1 = make_word_cloud(words, seed=seed1)
         word_cloud_2 = make_word_cloud(words, seed=seed2)
-
 
         self.assertFalse(_two_images_are_equal(word_cloud_1, word_cloud_2))
