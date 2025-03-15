@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import math
-import random
 from collections import Counter
 from collections.abc import Callable
 from dataclasses import replace
@@ -13,7 +12,7 @@ from .font import FontWrapper
 from .image import ImageWrapper
 from .main import fill_next_word
 from .rectangle import Rectangle
-from .util import Color
+from .util import Color, get_random_state
 
 
 # pylint: disable=(unused-argument, too-many-positional-arguments)
@@ -30,10 +29,10 @@ def make_word_cloud(
     word_padding: int = 0,  # TODO
     scaling_func: Callable[[float], float] = math.sqrt,
     mask: Image | None = None,  # TODO
-    seed: int | float | str | bytes | bytearray | None = None,
+    seed: int | None = None,
 ) -> Image:
-    if seed is not None:
-        random.seed(seed)
+
+    _ = get_random_state(reseed=True, seed=seed)
 
     # Asserts
     assert len(all_words) > 0, "No words in list"
