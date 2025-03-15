@@ -78,26 +78,24 @@ def fill_next_word(
     rotate = False
     if suitable_horizontal_rectangles and not suitable_vertical_rectangles:
         chosen_rectangle = max(suitable_horizontal_rectangles, key=lambda x: x.area)
-        suitable_horizontal_rectangles.remove(chosen_rectangle)
 
     elif suitable_vertical_rectangles and not suitable_horizontal_rectangles:
         chosen_rectangle = max(suitable_vertical_rectangles, key=lambda x: x.area)
-        suitable_vertical_rectangles.remove(chosen_rectangle)
         rotate = True
 
     elif suitable_horizontal_rectangles and suitable_vertical_rectangles:
         use_horizontal = random.random() < 0.5
         if use_horizontal:
             chosen_rectangle = max(suitable_horizontal_rectangles, key=lambda x: x.area)
-            suitable_horizontal_rectangles.remove(chosen_rectangle)
         else:
             chosen_rectangle = max(suitable_vertical_rectangles, key=lambda x: x.area)
-            suitable_vertical_rectangles.remove(chosen_rectangle)
             rotate = True
 
     else:
         print(f"skipping word '{word}', couldn't find a good rectangle")
         return available_rectangles
+    
+    available_rectangles.remove(chosen_rectangle)
 
     text_rectangle = _fill(
         chosen_rectangle,
@@ -126,3 +124,5 @@ def fill_next_word(
         + new_available_rectangles
         + available_rectangles_around_word
     )
+
+
