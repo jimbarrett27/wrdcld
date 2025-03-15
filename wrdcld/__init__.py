@@ -16,7 +16,7 @@ from .rectangle import Rectangle
 from .util import Color
 
 
-# pylint: disable=unused-argument
+# pylint: disable=(unused-argument, too-many-positional-arguments)
 def make_word_cloud(
     all_words: list[str] | Counter,
     width: int = 500,

@@ -1,4 +1,5 @@
 import random
+from logging import getLogger
 
 from .font import FontWrapper, draw_text
 from .image import ImageWrapper
@@ -9,7 +10,10 @@ from .rectangle import (
     fill_space_around_word,
 )
 
+LOGGER = getLogger(__name__)
 
+
+# pylint: disable=(too-many-positional-arguments)
 def _fill(
     rectangle: Rectangle,
     image: ImageWrapper,
@@ -60,6 +64,9 @@ def fill_next_word(
     font: FontWrapper,
     frequency: float,
 ):
+
+    available_rectangles = available_rectangles.copy()
+
     word_length = font.get_length_of_word(word)
 
     suitable_horizontal_rectangles = [
@@ -74,51 +81,37 @@ def fill_next_word(
         if rectangle.height >= word_length and rectangle.width >= font.size
     ]
 
-    horizontal_option = (
-        max(suitable_horizontal_rectangles, key=lambda x: x.area)
-        if suitable_horizontal_rectangles
-        else None
-    )
-    vertical_option = (
-        max(suitable_vertical_rectangles, key=lambda x: x.area)
-        if suitable_vertical_rectangles
-        else None
-    )
+    rotate = False
+    if suitable_horizontal_rectangles and not suitable_vertical_rectangles:
+        chosen_rectangle = max(suitable_horizontal_rectangles, key=lambda x: x.area)
 
-    options = []
-    if horizontal_option is not None:
-        options.append("horizontal")
-    if vertical_option is not None:
-        options.append("vertical")
+    elif suitable_vertical_rectangles and not suitable_horizontal_rectangles:
+        chosen_rectangle = max(suitable_vertical_rectangles, key=lambda x: x.area)
+        rotate = True
 
-    if not options:
-        # print(f"skipping word '{word}', couldn't find a good rectangle")
+    elif suitable_horizontal_rectangles and suitable_vertical_rectangles:
+        use_horizontal = random.random() < 0.5
+        if use_horizontal:
+            chosen_rectangle = max(suitable_horizontal_rectangles, key=lambda x: x.area)
+        else:
+            chosen_rectangle = max(suitable_vertical_rectangles, key=lambda x: x.area)
+            rotate = True
+
+    else:
+        LOGGER.warning("skipping word '%s', couldn't find a good rectangle", word)
         return available_rectangles
 
-    if len(options) == 1:
-        option = options[0]
-    else:
-        option = random.choices(options, weights=(0.9, 0.1))[0]
+    available_rectangles.remove(chosen_rectangle)
 
-    if option == "horizontal":
-        available_rectangles.remove(horizontal_option)
-        chosen_rectangle = horizontal_option
-        text_rectangle = _fill(
-            chosen_rectangle, image, word_length, word, font, frequency
-        )
-
-    else:
-        available_rectangles.remove(vertical_option)
-        chosen_rectangle = vertical_option
-        text_rectangle = _fill(
-            chosen_rectangle,
-            image,
-            word_length,
-            word,
-            font,
-            frequency,
-            rotate=True,
-        )
+    text_rectangle = _fill(
+        chosen_rectangle,
+        image,
+        word_length,
+        word,
+        font,
+        frequency,
+        rotate=rotate,
+    )
 
     fill_direction = random.choice(["horizontal", "vertical"])
 
